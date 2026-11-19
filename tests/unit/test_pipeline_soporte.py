@@ -11,11 +11,9 @@ from moto import mock_aws
 from deploy.deploy import (
     ClienteStaging,
     NotificadorConsola,
-    NotificadorTelegram,
     PipelineDespliegue,
     RegistroReleases,
     construir_pipeline,
-    crear_notificador,
     enmascarar,
 )
 from infra.init_infra import AprovisionadorIaC, EstadoDeseado
@@ -90,25 +88,6 @@ def test_caso_b_fallo_en_staging_activa_rollback(tmp_path, http, motivo):
 
 def test_enmascarar():
     assert (enmascarar("supersecreto"), enmascarar("")) == ("sup***", "(no configurado)")
-
-
-def test_fabrica_de_notificadores():
-    assert isinstance(crear_notificador({}), NotificadorConsola)
-    assert isinstance(crear_notificador({"TELEGRAM_BOT_TOKEN": "t", "TELEGRAM_CHAT_ID": "1"}),
-                      NotificadorTelegram)
-
-
-def test_notificador_telegram_envia_y_tolera_fallos(capsys):
-    http = HttpFalso()
-    NotificadorTelegram("TOKEN", "1", http=http).notificar("hola")
-    assert http.posts == ["https://api.telegram.org/botTOKEN/sendMessage"]
-
-    class HttpRoto:
-        def post(self, *args, **kwargs):
-            raise requests.Timeout()
-
-    NotificadorTelegram("TOKEN", "1", http=HttpRoto()).notificar("hola")
-    assert "No se pudo notificar" in capsys.readouterr().out
 
 
 def test_notificador_consola(capsys):

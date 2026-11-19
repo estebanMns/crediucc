@@ -1,11 +1,10 @@
-"""Semana 9: motor de Despliegue Continuo con Smoke Test, Rollback y Telegram.
+"""Semana 9: motor de Despliegue Continuo con Smoke Test y Rollback automático.
 
-Corrección respecto al laboratorio original: el token de Telegram YA NO está escrito
-en el código (lo marcaría SonarCloud, Semana 7); se lee de GitHub Secrets.
+El secreto API_SECRET_KEY se inyecta desde GitHub Secrets y nunca se imprime completo.
+Las notificaciones se escriben en la salida del pipeline (log de GitHub Actions).
 
 Variables de entorno:
-  STAGING_URL, VERSION_CANDIDATA, API_SECRET_KEY, REGISTRO_RELEASES,
-  TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID (opcionales: si faltan, se notifica por consola)
+  STAGING_URL, VERSION_CANDIDATA, API_SECRET_KEY, REGISTRO_RELEASES
 """
 from __future__ import annotations
 
@@ -40,28 +39,7 @@ class NotificadorConsola(Notificador):
         self._escribir = escribir
 
     def notificar(self, mensaje: str) -> None:
-        self._escribir(f"   [notificación local] {mensaje.splitlines()[0]}")
-
-
-class NotificadorTelegram(Notificador):
-    URL_API = "https://api.telegram.org/bot{token}/sendMessage"
-
-    def __init__(self, token: str, chat_id: str, http=requests) -> None:
-        self._url = self.URL_API.format(token=token)
-        self._chat_id = chat_id
-        self._http = http
-
-    def notificar(self, mensaje: str) -> None:
-        try:
-            self._http.post(self._url, timeout=5, json={
-                "chat_id": self._chat_id, "text": mensaje, "parse_mode": "Markdown"})
-        except requests.RequestException as exc:
-            print(f"   No se pudo notificar a Telegram: {exc.__class__.__name__}")
-
-
-def crear_notificador(entorno: Mapping[str, str]) -> Notificador:
-    token, chat_id = entorno.get("TELEGRAM_BOT_TOKEN"), entorno.get("TELEGRAM_CHAT_ID")
-    return NotificadorTelegram(token, chat_id) if token and chat_id else NotificadorConsola()
+        self._escribir(f"   [notificación] {mensaje.splitlines()[0]}")
 
 
 # ------------------------------------------------------------------ smoke test
@@ -159,7 +137,7 @@ def construir_pipeline(entorno: Mapping[str, str]) -> PipelineDespliegue:
     return PipelineDespliegue(
         staging=ClienteStaging(entorno.get("STAGING_URL", "http://localhost:8000")),
         registro=RegistroReleases(Path(entorno.get("REGISTRO_RELEASES", "releases.json"))),
-        notificador=crear_notificador(entorno),
+        notificador=NotificadorConsola(),
         version_candidata=entorno.get("VERSION_CANDIDATA", VERSION_INICIAL),
         secreto=entorno.get("API_SECRET_KEY", ""),
     )

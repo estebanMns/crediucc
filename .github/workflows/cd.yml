@@ -1,0 +1,104 @@
+# Semanas 5, 6, 8 y 9: pipeline de Despliegue Continuo encadenado con Quality Gates.
+#   1. qa-contrato  -> docker compose (LocalStack + IaC + API) y test-runner con JSON Schema
+#   2. carga        -> Locust con 200 usuarios + verificar_slo.py (p95 <= 1000 ms, fallos <= 1 %)
+#   3. despliegue   -> deploy.py: smoke test en staging -> promoción o rollback automático
+# Si una etapa falla, las siguientes no se ejecutan (needs:).
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qa-contrato:
+    name: Gate 3 - Pruebas de contrato en Docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Levantar entorno QA y ejecutar el test-runner
+        run: docker compose --profile qa up --build --exit-code-from test-runner test-runner
+
+      - name: Destruir el entorno
+        if: always()
+        run: docker compose --profile qa down -v
+
+  carga:
+    name: Gate de carga - Locust + SLO
+    needs: qa-contrato
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.11"
+
+      - name: Instalar Locust
+        run: python -m pip install locust==2.32.4
+
+      - name: Levantar la API (staging)
+        run: docker compose up -d --build --wait api
+
+      - name: Prueba de carga (200 usuarios concurrentes)
+        run: >
+          python -m locust -f load/locustfile.py --headless -u 200 -r 20 -t 60s
+          --host http://localhost:8000 --csv reporte_carga --exit-code-on-error 0
+
+      - name: Verificar SLO de rendimiento
+        run: python load/verificar_slo.py reporte_carga_stats.csv 1000 1
+
+      - name: Publicar reporte de carga
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: reporte-carga
+          path: reporte_carga_*.csv
+          if-no-files-found: warn
+
+      - name: Destruir el entorno
+        if: always()
+        run: docker compose down -v
+
+  despliegue:
+    name: CD - Smoke test, promoción o rollback
+    needs: carga
+    runs-on: ubuntu-latest
+    # Si el entorno "produccion" tiene Required reviewers, esto pasa a ser Continuous Delivery.
+    environment: produccion
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias del script de despliegue
+        run: python -m pip install requests==2.32.3
+
+      - name: Levantar la versión candidata en staging
+        env:
+          APP_VERSION: ${{ github.sha }}
+        run: docker compose up -d --build --wait api
+
+      - name: Ejecutar pipeline de despliegue (deploy.py)
+        env:
+          API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
+          STAGING_URL: http://localhost:8000
+          VERSION_CANDIDATA: ${{ github.sha }}
+        run: python deploy/deploy.py
+
+      - name: Logs de staging (si falló)
+        if: failure()
+        run: docker compose logs api
+
+      - name: Destruir el entorno
+        if: always()
+        run: docker compose down -v

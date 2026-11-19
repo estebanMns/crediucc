@@ -1,4 +1,0 @@
-Method,Name,Error,Occurrences,First Seen,Last Seen
-POST,POST /api/v1/solicitudes,"CatchResponseError('Esperado 201, recibido 0')",277,2026-11-11T00:51:40Z,2026-11-11T00:52:38Z
-GET,GET /health,"ConnectionRefusedError(61, 'Connection refused')",884,2026-11-11T00:51:40Z,2026-11-11T00:52:39Z
-GET,GET /api/v1/solicitudes,"ConnectionRefusedError(61, 'Connection refused')",298,2026-11-11T00:51:40Z,2026-11-11T00:52:39Z

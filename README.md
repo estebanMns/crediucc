@@ -2,8 +2,8 @@
 
 Sistema de **solicitud y aprobación de microcréditos estudiantiles** que integra lo que se vio en las semanas 1 a 10:
 Pytest (AAA, BVA, parametrización), cobertura con Quality Gate, Docker y Docker Compose, pruebas de API con JSON Schema,
-CI con GitHub Actions, análisis estático (Ruff y SonarCloud), pruebas de carga con Locust, CD con smoke test, rollback y
-Telegram, e IaC con LocalStack (S3 + SQS).
+CI con GitHub Actions, análisis estático (Ruff y SonarCloud), pruebas de carga con Locust, CD con smoke test y
+rollback automático, e IaC con LocalStack (S3 + SQS).
 
 ## Arquitectura (capas + SOLID)
 
@@ -25,10 +25,10 @@ app/
 ├── config.py           Configuracion inmutable desde variables de entorno
 ├── contenedor.py       Raíz de composición (único lugar que conoce las clases concretas)
 └── main.py             Punto de entrada ASGI
-deploy/deploy.py        PipelineDespliegue, ClienteStaging, RegistroReleases, Notificador (Telegram/Consola)
+deploy/deploy.py        PipelineDespliegue, ClienteStaging, RegistroReleases, NotificadorConsola
 infra/init_infra.py     AprovisionadorIaC + EstadoDeseado (idempotente)
 load/                   locustfile.py (enjambre) + verificar_slo.py (Quality Gate de rendimiento)
-tests/unit/             76 pruebas, 98 % de cobertura de líneas y ramas
+tests/unit/             75 pruebas, ~94 % de cobertura de líneas y ramas
 tests/api/              Pruebas de caja negra en el contenedor test-runner (JSON Schema + S3/SQS)
 ```
 
@@ -36,7 +36,7 @@ tests/api/              Pruebas de caja negra en el contenedor test-runner (JSON
 |---|---|
 | **S** — Responsabilidad única | El validador solo valida, cada regla evalúa una condición, el servicio solo orquesta y la API solo traduce HTTP. |
 | **O** — Abierto/cerrado | Para crear una regla o política de tasa nueva se agrega una subclase y el evaluador no se toca (ver `test_evaluador_acepta_reglas_nuevas_sin_modificarse`). |
-| **L** — Sustitución de Liskov | `PublicadorNulo` ↔ `PublicadorAWS` y `NotificadorConsola` ↔ `NotificadorTelegram` son intercambiables. |
+| **L** — Sustitución de Liskov | `PublicadorNulo` ↔ `PublicadorAWS` son intercambiables, y en las pruebas un `NotificadorEspia` sustituye a `NotificadorConsola` sin cambiar el pipeline. |
 | **I** — Segregación de interfaces | Hay cuatro puertos pequeños en lugar de una interfaz "Dios". |
 | **D** — Inversión de dependencias | El dominio y la aplicación dependen de abstracciones. Las implementaciones concretas se inyectan desde `contenedor.py`. |
 
@@ -73,7 +73,7 @@ En Docker Compose, el frontend se publica en **http://localhost:3000/**.
 ## Prueba de carga y SLO
 
 ```bash
-python -m locust -f load/locustfile.py --headless -u 100 -r 10 -t 60s \
+python -m locust -f load/locustfile.py --headless -u 200 -r 20 -t 60s \
   --host http://localhost:8000 --csv reporte_carga --exit-code-on-error 0
 python load/verificar_slo.py reporte_carga_stats.csv 1000 1      # p95 ≤ 1000 ms y fallos ≤ 1 %
 ```
@@ -84,6 +84,12 @@ python load/verificar_slo.py reporte_carga_stats.csv 1000 1      # p95 ≤ 1000 
 API_SECRET_KEY=xxx VERSION_CANDIDATA=2.0.0 python deploy/deploy.py   # exit 0 = promovido, 1 = rollback
 ```
 
+En GitHub Actions, el workflow `.github/workflows/cd.yml` corre en cada push a `main` (o a mano desde **Actions → CD → Run workflow**) y encadena tres etapas con `needs:`. Si una falla, las siguientes no se ejecutan:
+
+1. **qa-contrato**: `docker compose --profile qa up` levanta LocalStack, la IaC y la API, y el `test-runner` valida el contrato con JSON Schema (Gate 3).
+2. **carga**: Locust con 200 usuarios concurrentes y `verificar_slo.py`. El reporte CSV se publica como *artifact* del workflow, no se versiona.
+3. **despliegue**: entorno `produccion`. Levanta la versión candidata en staging y ejecuta `deploy.py` (smoke test → promoción o rollback).
+
 ## Análisis con SonarCloud
 
 El workflow `.github/workflows/sonarcloud.yml` ejecuta Ruff, las pruebas Python con cobertura, y lint, type-check y build del frontend en `windows-latest`. Después envía el análisis a SonarCloud en cada push o pull request a `main`, usando la autenticación OIDC de SonarSource. También se puede iniciar manualmente desde **Actions → SonarQube → Run workflow**.
@@ -92,7 +98,7 @@ Para usar el análisis desde CI, abre el proyecto en SonarCloud y desactiva **Au
 
 ## Secretos de GitHub requeridos
 
-`API_SECRET_KEY`, `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` se usan en despliegues. El análisis SonarCloud usa autenticación OIDC desde GitHub Actions. Si creas el entorno `produccion` con *Required reviewers*, el pipeline pasa de Continuous Deployment a Continuous Delivery.
+`API_SECRET_KEY` se usa en el despliegue (`cd.yml`) y se imprime enmascarado. El análisis SonarCloud usa autenticación OIDC desde GitHub Actions. Si creas el entorno `produccion` con *Required reviewers*, el pipeline pasa de Continuous Deployment a Continuous Delivery.
 
 ## Inyección de fallas (demostración de los Quality Gates)
 
@@ -103,4 +109,4 @@ Para usar el análisis desde CI, abre el proyecto en SonarCloud y desactiva **Au
 | Pruebas eliminadas | Borrar archivos de `tests/unit` | Gate 1: la cobertura cae por debajo del 80 % |
 | Secreto en el código | Escribir un token en cualquier `.py` | Gate 2: SonarCloud |
 | Cuello de botella | `CENTRAL_RIESGO_LATENCIA_MS=1200` | Gate de carga: el p95 viola el SLO |
-| Staging enfermo | `APP_HEALTHY=false` | CD: el smoke test falla, hay rollback y alerta en Telegram |
+| Staging enfermo | `APP_HEALTHY=false` | CD: el smoke test falla y hay rollback automático (exit code 1) |
