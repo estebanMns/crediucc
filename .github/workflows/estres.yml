@@ -1,0 +1,77 @@
+# Prueba de ESTRÉS (complementa la prueba de carga del CD).
+#   Carga  (cd.yml):     ¿aguanta el tráfico esperado? 200 usuarios fijos + SLO.
+#   Estrés (este archivo): ¿dónde se rompe y se recupera? 100 → 250 → 500 → 750 → 1000 usuarios → recuperación.
+# Se ejecuta a mano (Actions → Prueba de estrés → Run workflow) porque tarda ~6 min y busca romper el sistema.
+# Encontrar el punto de quiebre NO es un fallo; el workflow falla solo si el sistema no se recupera.
+name: Prueba de estrés
+
+on:
+  workflow_dispatch:
+    inputs:
+      escalones:
+        description: "Usuarios por escalón, de menor a mayor"
+        default: "100,250,500,750,1000"
+        required: true
+        type: string
+      duracion_escalon_s:
+        description: "Segundos por escalón"
+        default: "60"
+        required: true
+        type: string
+      latencia_central_ms:
+        description: "Latencia simulada de la central de riesgo (1200 = inyectar cuello de botella)"
+        default: "150"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  estres:
+    name: Estrés - Locust por escalones
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ESTRES_ESCALONES: ${{ inputs.escalones }}
+      ESTRES_DURACION_S: ${{ inputs.duracion_escalon_s }}
+      CENTRAL_RIESGO_LATENCIA_MS: ${{ inputs.latencia_central_ms }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.11"
+
+      - name: Instalar Locust
+        run: "python -m pip install --only-binary :all: locust==2.32.4"
+
+      - name: Levantar la API
+        run: docker compose up -d --build --wait api
+
+      - name: Prueba de estrés (la forma de carga controla usuarios y duración)
+        run: >
+          python -m locust -f load/estres.py --headless --host http://localhost:8000
+          --csv estres --html estres.html --exit-code-on-error 0
+
+      - name: Analizar punto de quiebre y recuperación
+        run: python -m load.analizar_estres estres_stats_history.csv 1000 1 | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Publicar reporte de estrés
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: reporte-estres
+          path: |
+            estres_*.csv
+            estres.html
+          if-no-files-found: warn
+
+      - name: Logs de la API (si falló)
+        if: failure()
+        run: docker compose logs api
+
+      - name: Destruir el entorno
+        if: always()
+        run: docker compose down -v

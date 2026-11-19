@@ -110,6 +110,28 @@ python -m locust -f load/locustfile.py --headless -u 200 -r 20 -t 60s \
 python load/verificar_slo.py reporte_carga_stats.csv 1000 1      # p95 ≤ 1000 ms y fallos ≤ 1 %
 ```
 
+## Prueba de estrés (punto de quiebre)
+
+La prueba de **carga** confirma que el sistema aguanta el tráfico esperado (200 usuarios fijos). La de **estrés**
+busca dónde se rompe: sube por escalones de 100, 250, 500, 750 y 1.000 usuarios (un minuto cada uno) y luego baja a
+50 usuarios para comprobar que el sistema **se recupera**.
+
+```bash
+python -m locust -f load/estres.py --headless --host http://localhost:8000 \
+  --csv estres --html estres.html --exit-code-on-error 0       # la forma de carga controla usuarios y tiempo
+python -m load.analizar_estres estres_stats_history.csv 1000 1  # punto de quiebre + recuperación
+```
+
+- `load/plan_estres.py`: escalones configurables con `ESTRES_ESCALONES`, `ESTRES_DURACION_S`,
+  `ESTRES_USUARIOS_RECUPERACION` y `ESTRES_TASA_LLEGADA`.
+- `load/analizar_estres.py`: informa por escalón (peticiones, RPS, p95 y fallos), el **punto de quiebre** (primer
+  escalón que viola el SLO), la **capacidad segura** y la **recuperación**. Encontrar el quiebre no es un fallo: el
+  comando termina con error solo si el sistema no vuelve a cumplir el SLO al bajar la carga.
+- En GitHub: **Actions → Prueba de estrés → Run workflow** (`.github/workflows/estres.yml`). Se ejecuta a mano porque
+  tarda unos 6 minutos. El informe aparece en el resumen de la ejecución, y el CSV y el HTML de Locust se publican
+  como artifact `reporte-estres`.
+- Para la demo, ejecútalo con `latencia_central_ms = 1200`: el quiebre aparece desde el primer escalón.
+
 ## Despliegue continuo
 
 ```bash
@@ -140,5 +162,5 @@ Para usar el análisis desde CI, abre el proyecto en SonarCloud y desactiva **Au
 | Contrato roto | En `modelos.a_dict`, renombrar `tasa_mensual` a `tasaMensual` | Gate 3: `ValidationError` de JSON Schema |
 | Pruebas eliminadas | Borrar archivos de `tests/unit` | Gate 1: la cobertura cae por debajo del 80 % |
 | Secreto en el código | Escribir un token en cualquier `.py` | Gate 2: SonarCloud |
-| Cuello de botella | `CENTRAL_RIESGO_LATENCIA_MS=1200` | Gate de carga: el p95 viola el SLO |
+| Cuello de botella | `CENTRAL_RIESGO_LATENCIA_MS=1200` | Gate de carga: el p95 viola el SLO; en la prueba de estrés, quiebre desde el primer escalón |
 | Staging enfermo | `APP_HEALTHY=false` | CD: el smoke test falla y hay rollback automático (exit code 1) |

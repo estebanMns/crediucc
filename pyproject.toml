@@ -7,7 +7,7 @@ requires-python = ">=3.11"
 [tool.coverage.run]
 source = ["."]
 relative_files = true
-omit = ["tests/*", "frontend/*", ".venv/*", "venv/*"]
+omit = ["tests/*", "frontend/*", ".venv/*", "venv/*", "load/locustfile.py", "load/estres.py"]
 
 # Semana 7: el linter es la primera inspección estática del pipeline.
 [tool.ruff]
