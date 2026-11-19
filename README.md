@@ -31,7 +31,7 @@ db/                     001_crear_solicitudes.sql y 002_crear_perfiles.sql: esqu
 deploy/deploy.py        PipelineDespliegue, ClienteStaging, RegistroReleases, NotificadorConsola
 infra/init_infra.py     AprovisionadorIaC + EstadoDeseado (idempotente)
 load/                   locustfile.py (enjambre) + verificar_slo.py (Quality Gate de rendimiento)
-tests/unit/             125 pruebas, ~96 % de cobertura de líneas y ramas
+tests/unit/             162 pruebas, ~98 % de cobertura de líneas y ramas
 tests/api/              Pruebas de caja negra en el contenedor test-runner (JSON Schema + S3/SQS)
 ```
 
@@ -43,64 +43,162 @@ tests/api/              Pruebas de caja negra en el contenedor test-runner (JSON
 | **I** — Segregación de interfaces | Hay cuatro puertos pequeños en lugar de una interfaz "Dios". |
 | **D** — Inversión de dependencias | El dominio y la aplicación dependen de abstracciones. Las implementaciones concretas se inyectan desde `contenedor.py`. |
 
-## Base de datos y login con Supabase
+## Instalación y puesta en marcha
 
-La API funciona en dos modos, según las variables del archivo `.env` (plantilla en `.env.example`):
+### Requisitos previos
 
-| Variables | Dónde se guardan las solicitudes | Login |
-|---|---|---|
-| Ninguna (pruebas, CI, Docker Compose) | En memoria | No: modo anónimo |
-| `DATABASE_URL` | Tabla `solicitudes` de Supabase (PostgreSQL) | — |
-| `SUPABASE_URL` + `SUPABASE_PUBLISHABLE_KEY` | — | Sí: registro e ingreso con Supabase Auth; cada usuario ve solo sus solicitudes |
+| Herramienta | Versión | Comprobar con | Para qué |
+|---|---|---|---|
+| Git | cualquiera reciente | `git --version` | Descargar el proyecto |
+| Python | **3.11** | `python --version` | API, pruebas, Locust, despliegue |
+| Node.js | **20.9 o superior** (CI usa 24) | `node --version` | Frontend Next.js |
+| Docker Desktop | con Docker Compose v2 | `docker compose version` | Solo para la opción B y las pruebas en contenedor |
+| Cuenta de Supabase | plan gratuito | — | Solo si quieres login y base de datos (opción A completa) |
 
-Puesta en marcha (una sola vez):
+> En Windows usa siempre `python -m ...` (por ejemplo `python -m pytest`) para evitar el error
+> *"no se reconoce como comando"* (PATH), como se explica en la Semana 2.
 
-1. En Supabase → **SQL Editor** → ejecuta, en orden, `db/001_crear_solicitudes.sql` y `db/002_crear_perfiles.sql`.
-2. **Backend:** copia `.env.example` como `.env` (raíz) y llena `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` y
-   `DATABASE_URL` (botón **Connect** → **Session pooler**).
-3. **Frontend:** copia `frontend/.env.example` como `frontend/.env.local`; `API_URL` indica dónde está la API
-   (por defecto `http://127.0.0.1:8001`). Ambos archivos están en `.gitignore`: nunca se suben.
-4. Para la demo, en **Authentication → Sign In / Providers → Email** puedes desactivar *Confirm email*;
-   si lo dejas activo, cada usuario debe confirmar su correo antes de ingresar (por eso el ingreso responde 401).
-
-Registro: nombre completo (nombre y apellido, solo letras), edad (16 a 100), semestre (1 a 12), correo válido y
-contraseña de 8 a 72 caracteres con letras y números, sin espacios. Se valida en el navegador y otra vez en la API
-(`app/api/esquemas.py`), que es la validación que cuenta. El perfil se guarda en la tabla `perfiles`.
-
-Endpoints de acceso: `POST /api/v1/auth/registro`, `POST /api/v1/auth/ingreso` y `GET /api/v1/auth/yo`.
-Las contraseñas las guarda y cifra Supabase Auth; la API solo verifica el token de cada petición.
-
-## Ejecución local (sin Docker)
+### Paso 1. Descargar el proyecto
 
 ```bash
-python -m venv venv && source venv/bin/activate      # Windows: .\venv\Scripts\activate
-python -m pip install -r requirements-dev.txt
-python -m pytest                                     # unitarias + Quality Gate de cobertura (≥ 80 %)
-python -m ruff check .                               # linter
-python -m uvicorn app.main:app --port 8001 --reload  # terminal 1: API
+git clone https://github.com/estebanMns/crediucc.git
+cd crediucc
 ```
 
-En otra terminal, inicia el frontend Next.js:
+La aplicación se puede ejecutar de dos formas:
+
+| | Opción A: local (recomendada para la demo) | Opción B: Docker Compose |
+|---|---|---|
+| Qué levanta | API (uvicorn) + frontend (Next.js) | LocalStack (S3 + SQS) + IaC + API + frontend |
+| Login y base de datos | Sí, con Supabase (o modo memoria sin login) | No: modo memoria, sin login |
+| Puertos | API **8001**, web **3000** | API **8000**, web **3000**, LocalStack **4566** |
+
+### Opción A — Ejecución local
+
+#### A1. Backend (API FastAPI)
+
+```bash
+python -m venv .venv
+# Windows (PowerShell):  .\.venv\Scripts\activate
+# Linux / macOS:         source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements-dev.txt
+```
+
+#### A2. Base de datos y login con Supabase (opcional, una sola vez)
+
+Si te saltas este paso, la API funciona en **modo memoria**: sin login, y las solicitudes se borran al reiniciarla.
+
+1. Crea un proyecto en [supabase.com](https://supabase.com).
+2. En **SQL Editor** ejecuta, **en este orden**, el contenido de `db/001_crear_solicitudes.sql` y
+   `db/002_crear_perfiles.sql`. Debe aparecer *Success*.
+3. Copia la plantilla de variables y llénala con los datos de tu proyecto:
+
+   ```bash
+   cp .env.example .env          # Windows (PowerShell): Copy-Item .env.example .env
+   ```
+
+   | Variable | Dónde se obtiene en Supabase |
+   |---|---|
+   | `SUPABASE_URL` | **Project Settings → Data API** → Project URL |
+   | `SUPABASE_PUBLISHABLE_KEY` | **Project Settings → API Keys** → llave *publishable* (o *anon*). **Nunca** la *secret / service_role* |
+   | `DATABASE_URL` | Botón **Connect** → **Session pooler** (funciona en redes IPv4). Reemplaza `[YOUR-PASSWORD]` por la contraseña de la base |
+
+4. Para la demo, en **Authentication → Sign In / Providers → Email** desactiva **Confirm email**. Si lo dejas
+   activo, cada usuario debe confirmar su correo antes de ingresar, y Supabase limita cuántos correos envía por hora.
+
+El archivo `.env` está en `.gitignore`: **nunca se sube a GitHub**.
+
+| Variables presentes en `.env` | Solicitudes | Login |
+|---|---|---|
+| Ninguna | En memoria | No |
+| `DATABASE_URL` | Tabla `solicitudes` de Supabase (PostgreSQL) | — |
+| `SUPABASE_URL` + `SUPABASE_PUBLISHABLE_KEY` | — | Sí: cada usuario ve solo sus solicitudes |
+
+#### A3. Iniciar la API (terminal 1)
+
+```bash
+python -m uvicorn app.main:app --port 8001 --reload
+```
+
+Comprueba en el navegador **http://localhost:8001/health**. Debe responder
+`{"status":"healthy", ..., "login": true}` (`login: false` si no configuraste Supabase).
+La documentación interactiva está en **http://localhost:8001/docs**.
+
+#### A4. Frontend (terminal 2)
 
 ```bash
 cd frontend
+cp .env.example .env.local     # Windows (PowerShell): Copy-Item .env.example .env.local
 npm ci
 npm run dev
 ```
 
-También se puede abrir desde la IP de la red local (la URL "Network" que muestra `npm run dev`, por ejemplo desde el celular); eso funciona gracias a `allowedDevOrigins` en `frontend/next.config.ts`.
+`frontend/.env.local` solo contiene `API_URL=http://127.0.0.1:8001`, que indica dónde está la API. Next.js
+reenvía `/api/*` y `/health` a esa dirección, así que el navegador no necesita CORS ni ve las llaves.
 
-La interfaz web queda disponible en **http://localhost:3000/** y la documentación de la API en **http://localhost:8001/docs**. Next.js reenvía las peticiones del frontend a la API; por defecto, esta debe estar en `http://localhost:8001` (se puede cambiar con `API_URL`).
+Abre **http://localhost:3000/**. También funciona desde otro dispositivo de la misma red con la URL *Network* que
+muestra `npm run dev`, gracias a `allowedDevOrigins` en `frontend/next.config.ts`.
 
-## Entorno completo con Docker Compose (QA y staging)
+#### A5. Comprobar que todo funciona
+
+1. **Crear cuenta:** nombre y apellido (solo letras), edad (16 a 100), semestre (1 a 12), correo y una
+   contraseña de 8 a 72 caracteres con letras y números, sin espacios. El ojo del campo muestra u oculta la contraseña.
+2. Al ingresar, el encabezado dice **"Hola, {tu nombre}"**. El círculo con tus iniciales abre el perfil, y desde ahí
+   puedes **cerrar sesión**.
+3. **Nueva solicitud:** escribe montos en pesos colombianos (por ejemplo `2.000.000`). Debe aprobarse si la edad está
+   entre 18 y 65, el puntaje crediticio es de 600 o más y los ingresos son de $2.000.000 COP o más.
+4. **Mis solicitudes** muestra lo que enviaste; **Resumen** muestra los totales.
+5. Si usas Supabase, en **Table Editor** verás la fila nueva en `solicitudes` y tu perfil en `perfiles`.
+
+Las validaciones del registro se hacen en el navegador y otra vez en la API (`app/api/esquemas.py`), que es la que
+cuenta. Supabase Auth guarda y cifra las contraseñas. La sesión viaja en un token JWT dentro de una cookie
+`HttpOnly` y `SameSite=Strict`, que el código de la página no puede leer. Endpoints de acceso:
+`POST /api/v1/auth/registro`, `POST /api/v1/auth/ingreso`, `POST /api/v1/auth/salida` y `GET /api/v1/auth/yo`.
+
+### Opción B — Entorno completo con Docker Compose (QA y staging)
+
+Abre Docker Desktop y espera a que el motor esté en verde.
 
 ```bash
-docker compose --profile qa up --build --exit-code-from test-runner   # LocalStack + IaC + API + frontend + test-runner
-docker compose up -d --build frontend                                  # frontend + API + LocalStack
+docker compose --profile qa up --build --exit-code-from test-runner   # LocalStack + IaC + API + test-runner (pruebas de contrato)
+docker compose up -d --build frontend                                  # frontend + API + LocalStack para usar la app
+docker compose ps                                                      # todos deben estar "healthy"
 docker compose down -v                                                 # destruir todo
 ```
 
-En Docker Compose, el frontend se publica en **http://localhost:3000/**.
+El primer comando termina con `exit code 0` si pasan todas las pruebas de contrato. Con el segundo, la web queda en
+**http://localhost:3000/** y la API en **http://localhost:8000/docs**. Este modo no usa Supabase: no tiene login y
+guarda las solicitudes en memoria.
+
+### Ejecutar las pruebas
+
+```bash
+# Backend (desde la raíz, con el entorno virtual activo)
+python -m pytest                       # 162 pruebas unitarias + Quality Gate de cobertura (≥ 80 %)
+python -m pytest --cov-report=html     # reporte visual en htmlcov/index.html
+python -m ruff check .                 # linter
+
+# Frontend
+cd frontend
+npm run lint
+npm run typecheck
+npm test                               # 44 pruebas con Vitest
+npm run build
+```
+
+### Solución de problemas
+
+| Síntoma | Causa | Solución |
+|---|---|---|
+| `[Errno 10048]` o *address already in use* al iniciar la API | El puerto está ocupado (Docker Desktop suele usar el 8000) | Usa `--port 8001` como en el paso A3, o cierra el proceso que lo ocupa |
+| La web dice **"Sin conexión"** | La API no está corriendo, o `API_URL` apunta a otro puerto | Inicia la API (A3) y revisa `frontend/.env.local`; reinicia `npm run dev` |
+| Se queda en **"Conectando con CrediUCC..."** al abrirla por IP | Next.js bloquea orígenes que no estén permitidos | La IP debe ser `192.168.x.x` (ya permitida); recarga con Ctrl + F5 |
+| `failed to resolve host db.xxxx.supabase.co` | La conexión *Direct* de Supabase solo funciona por IPv6 | En `DATABASE_URL` usa la cadena del **Session pooler** |
+| El ingreso responde **401** justo después de registrarte | *Confirm email* está activo | Confirma el correo, o desactívalo (paso A2.4) |
+| *"Se enviaron demasiados correos"* | Límite de correos de Supabase | Desactiva *Confirm email* o espera una hora |
+| `pytest` / `uvicorn` *no se reconoce como comando* | PATH de Windows | Usa `python -m pytest`, `python -m uvicorn` y activa el `.venv` |
+| `docker: error during connect` | Docker Desktop está cerrado | Ábrelo y espera a que el motor arranque |
 
 ## Prueba de carga y SLO
 
