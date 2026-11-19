@@ -21,7 +21,7 @@ import requests
 
 VERSION_INICIAL = "1.0.0"
 SOLICITUD_DE_HUMO = {"nombre": "Smoke", "email": "smoke@example.com", "edad": 25,
-                     "score": 700, "ingresos": 2500.0, "monto": 500.0, "es_estudiante": True}
+                     "score": 700, "ingresos": 2_500_000.0, "monto": 500_000.0, "es_estudiante": True}
 
 
 def enmascarar(secreto: str) -> str:
@@ -120,16 +120,16 @@ class PipelineDespliegue:
         self._escribir(f"   -> [OK] {resultado.detalle}")
         self._escribir(f"[4/4] PROMOCIONANDO {self._candidata} A PRODUCCIÓN")
         self._registro.promover(self._candidata)
-        self._notificador.notificar(f"*DESPLIEGUE EXITOSO* 🚀\n• Versión: `{self._candidata}`\n"
-                                    f"• Smoke test: {resultado.detalle}")
+        self._notificador.notificar(f"DESPLIEGUE EXITOSO\n- Versión: {self._candidata}\n"
+                                    f"- Smoke test: {resultado.detalle}")
         return 0
 
     def _revertir(self, resultado: ResultadoSmoke, estable: str) -> int:
         self._escribir(f"   -> [ERROR] {resultado.detalle}")
         self._escribir(f"[4/4] ROLLBACK AUTOMÁTICO: se mantiene la versión estable {estable}")
-        self._notificador.notificar(f"*ALERTA: ROLLBACK AUTOMÁTICO* 🚨\n"
-                                    f"• Candidata rechazada: `{self._candidata}`\n"
-                                    f"• Motivo: {resultado.detalle}\n• Producción sigue en: `{estable}`")
+        self._notificador.notificar(f"ALERTA: ROLLBACK AUTOMÁTICO\n"
+                                    f"- Candidata rechazada: {self._candidata}\n"
+                                    f"- Motivo: {resultado.detalle}\n- Producción sigue en: {estable}")
         return 1
 
 
@@ -144,4 +144,6 @@ def construir_pipeline(entorno: Mapping[str, str]) -> PipelineDespliegue:
 
 
 if __name__ == "__main__":
+    # La consola de Windows (cp1252) no imprime todos los caracteres: nunca debe tumbar el despliegue.
+    sys.stdout.reconfigure(errors="replace")
     sys.exit(construir_pipeline(os.environ).ejecutar())

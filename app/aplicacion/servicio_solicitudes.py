@@ -25,20 +25,21 @@ class ServicioSolicitudes:
         self._publicador = publicador
         self._central_riesgo = central_riesgo
 
-    def radicar(self, solicitud: SolicitudCredito) -> SolicitudRegistrada:
+    def radicar(self, solicitud: SolicitudCredito, usuario_id: str | None = None) -> SolicitudRegistrada:
         resultado = self._evaluador.evaluar(solicitud)
         self._central_riesgo.consultar(solicitud)
-        registro = self._repositorio.agregar(solicitud, resultado)
+        registro = self._repositorio.agregar(solicitud, resultado, usuario_id)
         if resultado.es_aprobado:
             registro = registro.con_notificacion(self._publicador.publicar_aprobacion(registro))
             self._repositorio.actualizar(registro)
         return registro
 
-    def obtener(self, solicitud_id: int) -> SolicitudRegistrada:
-        registro = self._repositorio.obtener(solicitud_id)
+    def obtener(self, solicitud_id: int, usuario_id: str | None = None) -> SolicitudRegistrada:
+        """Una solicitud de otro usuario se trata como inexistente (no se revela que existe)."""
+        registro = self._repositorio.obtener(solicitud_id, usuario_id)
         if registro is None:
             raise SolicitudNoEncontradaError(solicitud_id)
         return registro
 
-    def listar(self) -> list[SolicitudRegistrada]:
-        return self._repositorio.listar()
+    def listar(self, usuario_id: str | None = None) -> list[SolicitudRegistrada]:
+        return self._repositorio.listar(usuario_id)

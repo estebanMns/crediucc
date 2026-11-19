@@ -2,7 +2,7 @@
 
 Mezcla de tareas 3:1:1 -> consultas frecuentes, solicitudes menos frecuentes.
 Uso headless (CI):
-  locust -f load/locustfile.py --headless -u 100 -r 10 -t 60s \
+  locust -f load/locustfile.py --headless -u 200 -r 20 -t 60s \
          --host http://localhost:8000 --csv reporte_carga
 """
 import random
@@ -28,8 +28,8 @@ class EstudianteSolicitante(HttpUser):
                                   "nombre": "Carga", "email": "carga@example.com",
                                   "edad": random.randint(18, 40),
                                   "score": random.randint(550, 850),
-                                  "ingresos": round(random.uniform(1500, 4000), 2),
-                                  "monto": round(random.uniform(100, 5000), 2),
+                                  "ingresos": round(random.uniform(1_500_000, 4_000_000)),
+                                  "monto": round(random.uniform(100_000, 5_000_000)),
                                   "es_estudiante": random.choice([True, False]),
                               }) as respuesta:
             if respuesta.status_code != 201:

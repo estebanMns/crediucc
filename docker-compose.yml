@@ -73,6 +73,9 @@ services:
     environment:
       - API_URL=http://api:8000
       - AWS_ENDPOINT_URL=http://localstack:4566
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test          # credenciales dummy: solo válidas en LocalStack
+      - AWS_SECRET_ACCESS_KEY=test
     depends_on:
       api:
         condition: service_healthy

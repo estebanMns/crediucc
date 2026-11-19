@@ -18,17 +18,20 @@ app/
 │   └── evaluador.py      EvaluadorCredito (recibe reglas y política por constructor)
 ├── aplicacion/
 │   ├── puertos.py        Interfaces (Protocol): Repositorio, Publicador, CentralRiesgo, MonitorSalud
-│   └── servicio_solicitudes.py   Caso de uso: radicar / obtener / listar
-├── infraestructura/    Adaptadores: RepositorioEnMemoria, PublicadorAWS, PublicadorNulo,
-│                       CentralRiesgoSimulada, MonitorSaludPorEntorno
+│   ├── identidad.py      Usuario, Sesion y el puerto ProveedorIdentidad (login)
+│   └── servicio_solicitudes.py   Caso de uso: radicar / obtener / listar (por usuario)
+├── infraestructura/    Adaptadores: RepositorioEnMemoria, RepositorioPostgres (Supabase),
+│                       ProveedorSupabase / ProveedorDeshabilitado (login), PublicadorAWS,
+│                       PublicadorNulo, CentralRiesgoSimulada, MonitorSaludPorEntorno
 ├── api/                Adaptador HTTP FastAPI (crear_app = fábrica con dependencias inyectadas)
 ├── config.py           Configuracion inmutable desde variables de entorno
 ├── contenedor.py       Raíz de composición (único lugar que conoce las clases concretas)
-└── main.py             Punto de entrada ASGI
+└── main.py             Punto de entrada ASGI (lee el .env en local)
+db/                     001_crear_solicitudes.sql y 002_crear_perfiles.sql: esquema en Supabase con RLS
 deploy/deploy.py        PipelineDespliegue, ClienteStaging, RegistroReleases, NotificadorConsola
 infra/init_infra.py     AprovisionadorIaC + EstadoDeseado (idempotente)
 load/                   locustfile.py (enjambre) + verificar_slo.py (Quality Gate de rendimiento)
-tests/unit/             75 pruebas, ~94 % de cobertura de líneas y ramas
+tests/unit/             125 pruebas, ~96 % de cobertura de líneas y ramas
 tests/api/              Pruebas de caja negra en el contenedor test-runner (JSON Schema + S3/SQS)
 ```
 
@@ -36,9 +39,36 @@ tests/api/              Pruebas de caja negra en el contenedor test-runner (JSON
 |---|---|
 | **S** — Responsabilidad única | El validador solo valida, cada regla evalúa una condición, el servicio solo orquesta y la API solo traduce HTTP. |
 | **O** — Abierto/cerrado | Para crear una regla o política de tasa nueva se agrega una subclase y el evaluador no se toca (ver `test_evaluador_acepta_reglas_nuevas_sin_modificarse`). |
-| **L** — Sustitución de Liskov | `PublicadorNulo` ↔ `PublicadorAWS` son intercambiables, y en las pruebas un `NotificadorEspia` sustituye a `NotificadorConsola` sin cambiar el pipeline. |
+| **L** — Sustitución de Liskov | `RepositorioEnMemoria` ↔ `RepositorioPostgres` y `PublicadorNulo` ↔ `PublicadorAWS` son intercambiables, y en las pruebas un `NotificadorEspia` sustituye a `NotificadorConsola` sin cambiar el pipeline. |
 | **I** — Segregación de interfaces | Hay cuatro puertos pequeños en lugar de una interfaz "Dios". |
 | **D** — Inversión de dependencias | El dominio y la aplicación dependen de abstracciones. Las implementaciones concretas se inyectan desde `contenedor.py`. |
+
+## Base de datos y login con Supabase
+
+La API funciona en dos modos, según las variables del archivo `.env` (plantilla en `.env.example`):
+
+| Variables | Dónde se guardan las solicitudes | Login |
+|---|---|---|
+| Ninguna (pruebas, CI, Docker Compose) | En memoria | No: modo anónimo |
+| `DATABASE_URL` | Tabla `solicitudes` de Supabase (PostgreSQL) | — |
+| `SUPABASE_URL` + `SUPABASE_PUBLISHABLE_KEY` | — | Sí: registro e ingreso con Supabase Auth; cada usuario ve solo sus solicitudes |
+
+Puesta en marcha (una sola vez):
+
+1. En Supabase → **SQL Editor** → ejecuta, en orden, `db/001_crear_solicitudes.sql` y `db/002_crear_perfiles.sql`.
+2. **Backend:** copia `.env.example` como `.env` (raíz) y llena `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` y
+   `DATABASE_URL` (botón **Connect** → **Session pooler**).
+3. **Frontend:** copia `frontend/.env.example` como `frontend/.env.local`; `API_URL` indica dónde está la API
+   (por defecto `http://127.0.0.1:8001`). Ambos archivos están en `.gitignore`: nunca se suben.
+4. Para la demo, en **Authentication → Sign In / Providers → Email** puedes desactivar *Confirm email*;
+   si lo dejas activo, cada usuario debe confirmar su correo antes de ingresar (por eso el ingreso responde 401).
+
+Registro: nombre completo (nombre y apellido, solo letras), edad (16 a 100), semestre (1 a 12), correo válido y
+contraseña de 8 a 72 caracteres con letras y números, sin espacios. Se valida en el navegador y otra vez en la API
+(`app/api/esquemas.py`), que es la validación que cuenta. El perfil se guarda en la tabla `perfiles`.
+
+Endpoints de acceso: `POST /api/v1/auth/registro`, `POST /api/v1/auth/ingreso` y `GET /api/v1/auth/yo`.
+Las contraseñas las guarda y cifra Supabase Auth; la API solo verifica el token de cada petición.
 
 ## Ejecución local (sin Docker)
 
@@ -47,7 +77,7 @@ python -m venv venv && source venv/bin/activate      # Windows: .\venv\Scripts\a
 python -m pip install -r requirements-dev.txt
 python -m pytest                                     # unitarias + Quality Gate de cobertura (≥ 80 %)
 python -m ruff check .                               # linter
-python -m uvicorn app.main:app --port 8000 --reload  # terminal 1: API
+python -m uvicorn app.main:app --port 8001 --reload  # terminal 1: API
 ```
 
 En otra terminal, inicia el frontend Next.js:
@@ -58,7 +88,9 @@ npm ci
 npm run dev
 ```
 
-La interfaz web queda disponible en **http://localhost:3000/** y la documentación de la API en **http://localhost:8000/docs**. Next.js reenvía las peticiones del frontend a la API; por defecto, esta debe estar en `http://localhost:8000` (se puede cambiar con `API_URL`).
+También se puede abrir desde la IP de la red local (la URL "Network" que muestra `npm run dev`, por ejemplo desde el celular); eso funciona gracias a `allowedDevOrigins` en `frontend/next.config.ts`.
+
+La interfaz web queda disponible en **http://localhost:3000/** y la documentación de la API en **http://localhost:8001/docs**. Next.js reenvía las peticiones del frontend a la API; por defecto, esta debe estar en `http://localhost:8001` (se puede cambiar con `API_URL`).
 
 ## Entorno completo con Docker Compose (QA y staging)
 

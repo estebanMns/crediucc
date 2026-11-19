@@ -29,7 +29,7 @@ SOLICITUD_SCHEMA = {
 }
 
 BASE = {"nombre": "Ana Gomez", "email": "ana@example.com", "edad": 21,
-        "score": 780, "ingresos": 2600.0, "monto": 900.0, "es_estudiante": True}
+        "score": 780, "ingresos": 2_600_000.0, "monto": 900_000.0, "es_estudiante": True}
 
 
 def crear(**cambios):
@@ -57,15 +57,15 @@ def test_crear_solicitud_201_cumple_contrato():
         ({"edad": 18}, "APROBADO"),
         ({"score": 599}, "RECHAZADO"),
         ({"score": 600}, "APROBADO"),
-        ({"ingresos": 1999.99}, "RECHAZADO"),
-        ({"ingresos": 2000.00}, "APROBADO"),
+        ({"ingresos": 1_999_999.0}, "RECHAZADO"),
+        ({"ingresos": 2_000_000.0}, "APROBADO"),
     ],
 )
 def test_bva_extremo_a_extremo(cambios, decision):
     assert crear(**cambios).json()["decision"] == decision
 
 
-@pytest.mark.parametrize("cambios, status", [({"score": 851}, 400), ({"monto": 50}, 400),
+@pytest.mark.parametrize("cambios, status", [({"score": 851}, 400), ({"monto": 50_000}, 400),
                                              ({"edad": "veinte"}, 422)])
 def test_peticiones_invalidas(cambios, status):
     assert crear(**cambios).status_code == status

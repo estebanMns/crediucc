@@ -13,3 +13,8 @@ coverage.xml
 reporte_carga_*.csv
 releases.json
 htmlcov/
+
+# Variables de entorno con credenciales (Supabase, etc.): nunca se suben al repositorio
+.env
+.env.*
+!.env.example

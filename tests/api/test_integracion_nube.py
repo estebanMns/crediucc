@@ -17,14 +17,14 @@ pytestmark = pytest.mark.skipif(not AWS_ENDPOINT, reason="Sin AWS_ENDPOINT_URL (
 
 
 def _cliente(servicio):
-    return boto3.client(servicio, endpoint_url=AWS_ENDPOINT, region_name="us-east-1",
-                        aws_access_key_id="test", aws_secret_access_key="test")
+    # Región y credenciales (dummy de LocalStack) llegan por variables de entorno desde docker-compose.
+    return boto3.client(servicio, endpoint_url=AWS_ENDPOINT)
 
 
 def test_aprobacion_publica_expediente_y_evento():
     r = requests.post(f"{BASE_URL}/api/v1/solicitudes", timeout=10, json={
         "nombre": "Integracion", "email": "integracion@example.com", "edad": 30,
-        "score": 700, "ingresos": 3000.0, "monto": 2000.0, "es_estudiante": False})
+        "score": 700, "ingresos": 3_000_000.0, "monto": 2_000_000.0, "es_estudiante": False})
     solicitud = r.json()
     assert solicitud["decision"] == "APROBADO"
     assert solicitud["notificado"] is True

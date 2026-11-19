@@ -18,7 +18,7 @@ def evaluador() -> EvaluadorCredito:
 # ------------------------------------------------------------- Semana 1: AAA
 def test_estudiante_con_buen_perfil_es_aprobado_patron_aaa(evaluador):
     # Arrange
-    solicitud = nueva_solicitud(edad=22, score=720, ingresos=3000.0, es_estudiante=True)
+    solicitud = nueva_solicitud(edad=22, score=720, ingresos=3_000_000.0, es_estudiante=True)
     # Act
     resultado = evaluador.evaluar(solicitud)
     # Assert
@@ -44,10 +44,10 @@ def test_particion_equivalencia_edad(evaluador, edad, decision):
     ({"score": 599}, Motivo.SCORE_INSUFICIENTE),
     ({"score": 600}, Motivo.CUMPLE_POLITICA),
     ({"score": 850}, Motivo.CUMPLE_POLITICA),
-    ({"ingresos": 1999.99}, Motivo.INGRESOS_INSUFICIENTES),
-    ({"ingresos": 2000.00}, Motivo.CUMPLE_POLITICA),
-    ({"monto": 100.0}, Motivo.CUMPLE_POLITICA),
-    ({"monto": 5000.0}, Motivo.CUMPLE_POLITICA),
+    ({"ingresos": 1_999_999.0}, Motivo.INGRESOS_INSUFICIENTES),
+    ({"ingresos": 2_000_000.0}, Motivo.CUMPLE_POLITICA),
+    ({"monto": 100_000.0}, Motivo.CUMPLE_POLITICA),
+    ({"monto": 5_000_000.0}, Motivo.CUMPLE_POLITICA),
 ])
 def test_valores_limite_bva(evaluador, cambios, motivo_esperado):
     assert evaluador.evaluar(nueva_solicitud(**cambios)).motivo is motivo_esperado
@@ -65,8 +65,8 @@ def test_se_reporta_el_primer_motivo_por_prioridad(evaluador):
     ({"score": 299}, ValorFueraDeDominioError),
     ({"score": 851}, ValorFueraDeDominioError),
     ({"ingresos": -50.0}, ValorFueraDeDominioError),
-    ({"monto": 99.99}, ValorFueraDeDominioError),
-    ({"monto": 5000.01}, ValorFueraDeDominioError),
+    ({"monto": 99_999.0}, ValorFueraDeDominioError),
+    ({"monto": 5_000_001.0}, ValorFueraDeDominioError),
     ({"edad": "treinta"}, TipoInvalidoError),
     ({"score": "700"}, TipoInvalidoError),
     ({"score": True}, TipoInvalidoError),   # bool es subclase de int: trampa clásica

@@ -35,7 +35,7 @@ class ReglaScoreMinimo(ReglaElegibilidad):
 
 
 class ReglaIngresoMinimo(ReglaElegibilidad):
-    def __init__(self, minimo: float = 2000.0) -> None:
+    def __init__(self, minimo: float = 2_000_000.0) -> None:
         self._minimo = minimo
 
     def motivo_rechazo(self, solicitud: SolicitudCredito) -> Motivo | None:

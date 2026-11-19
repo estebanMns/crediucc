@@ -1,7 +1,7 @@
 """Entidades y objetos de valor del dominio de microcréditos (inmutables)."""
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from datetime import UTC, datetime
 from enum import StrEnum
 
@@ -72,10 +72,10 @@ class SolicitudRegistrada:
     resultado: ResultadoEvaluacion
     notificado: bool = False
     creado_en: datetime = field(default_factory=_ahora_utc)
+    usuario_id: str | None = None  # dueño de la solicitud (None = modo sin login)
 
     def con_notificacion(self, notificado: bool) -> SolicitudRegistrada:
-        return SolicitudRegistrada(id=self.id, solicitud=self.solicitud, resultado=self.resultado,
-                                   notificado=notificado, creado_en=self.creado_en)
+        return replace(self, notificado=notificado)
 
     def a_dict(self) -> dict:
         """Representación plana y estable: es el contrato JSON de la API."""

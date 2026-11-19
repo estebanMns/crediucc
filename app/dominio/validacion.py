@@ -18,7 +18,7 @@ def _es_numero(valor: object) -> bool:
 
 EDAD_DOMINIO = Rango(0, 120)
 SCORE_DOMINIO = Rango(300, 850)
-MONTO_DOMINIO = Rango(100.0, 5000.0)
+MONTO_DOMINIO = Rango(100_000.0, 5_000_000.0)  # pesos colombianos (COP)
 
 
 @dataclass(frozen=True)
@@ -61,4 +61,4 @@ class ValidadorSolicitud:
         if solicitud.ingresos < limites.ingresos_minimos:
             raise ValorFueraDeDominioError("Los ingresos no pueden ser negativos.")
         if not limites.monto.contiene(solicitud.monto):
-            raise ValorFueraDeDominioError("Monto fuera de rango (100-5000).")
+            raise ValorFueraDeDominioError("Monto fuera de rango (100.000-5.000.000 COP).")
