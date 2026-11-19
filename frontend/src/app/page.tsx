@@ -91,7 +91,7 @@ const dateTime = new Intl.DateTimeFormat("es-CO", {
 
 const rejectionReasons: Record<string, string> = {
   EDAD_FUERA_DE_RANGO: "La edad debe estar entre 18 y 65 años.",
-  SCORE_INSUFICIENTE: "El score mínimo requerido es 600.",
+  SCORE_INSUFICIENTE: "El puntaje mínimo requerido es 600.",
   INGRESOS_INSUFICIENTES: "Los ingresos mensuales no alcanzan el mínimo requerido ($2.000.000 COP).",
 };
 
@@ -339,25 +339,25 @@ function serviceStatus(serviceOnline: boolean | null): { dot: string; label: str
 // ------------------------------------------------------------------ piezas compartidas
 function HistoryStatus({ isLoading, error, isEmpty }: Readonly<{ isLoading: boolean; error: string; isEmpty: boolean }>) {
   if (isLoading) {
-    return <p className="py-8 text-center text-[10px] text-[#89948d]">Cargando tus solicitudes...</p>;
+    return <p className="py-8 text-center text-[14px] text-[#89948d]">Cargando tus solicitudes...</p>;
   }
   if (error) {
-    return <output className="block py-7 text-center text-[10px] text-[#a95948]">{error}</output>;
+    return <output className="block py-7 text-center text-[14px] text-[#a95948]">{error}</output>;
   }
   if (!isEmpty) return null;
   return (
     <div className="grid justify-items-center px-3 py-7 text-center">
       <span className="mb-2 grid h-10 w-10 place-items-center rounded-xl bg-[#f0f5ef] text-[#7a9a7b]"><Icon className="h-5 w-5" name="file" /></span>
-      <strong className="font-display text-[11px] text-[#58675d]">Aún no tienes solicitudes</strong>
-      <span className="mt-1 text-[9px] text-[#9ca69e]">Cuando envíes una, podrás consultar aquí su estado.</span>
-      <a className="mt-2 inline-flex items-center gap-1 text-[9px] font-bold text-[#477553]" href="#nueva-solicitud">Crear mi primera solicitud <Icon className="h-3 w-3" name="arrow" /></a>
+      <strong className="font-display text-[15px] text-[#58675d]">Aún no tienes solicitudes</strong>
+      <span className="mt-1 text-[13px] text-[#9ca69e]">Cuando envíes una, podrás consultar aquí su estado.</span>
+      <a className="mt-2 inline-flex items-center gap-1 text-[13px] font-bold text-[#477553]" href="#nueva-solicitud">Crear mi primera solicitud <Icon className="h-3 w-3" name="arrow" /></a>
     </div>
   );
 }
 
 function StatusBadge({ approved }: Readonly<{ approved: boolean }>) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[8px] font-semibold ${approved ? "bg-[#eaf5ec] text-[#54845c]" : "bg-[#fff0eb] text-[#b56e5b]"}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold ${approved ? "bg-[#eaf5ec] text-[#54845c]" : "bg-[#fff0eb] text-[#b56e5b]"}`}>
       <i className="h-[5px] w-[5px] rounded-full bg-current" />{approved ? "Aprobada" : "Rechazada"}
     </span>
   );
@@ -374,7 +374,7 @@ function formatDate(value: string): string {
 
 function ConnectionWarning() {
   return (
-    <div className="mb-3 flex items-start gap-2 rounded-lg border border-[#eedbd4] bg-[#fff7f4] px-3 py-2.5 text-[10px] leading-relaxed text-[#a95948]" role="alert">
+    <div className="mb-3 flex items-start gap-2 rounded-lg border border-[#eedbd4] bg-[#fff7f4] px-3 py-2.5 text-[14px] leading-relaxed text-[#a95948]" role="alert">
       <span className="font-extrabold">!</span>
       <span>{CONNECTION_ERROR}</span>
     </div>
@@ -392,37 +392,37 @@ function SummaryView({ applications, isLoading, historyError, userName }: Readon
 
   return (
     <>
-      <section className="mb-5 flex items-end justify-between gap-4">
+      <section className="mb-7 flex items-end justify-between gap-4">
         <div>
-          <p className="mb-2 flex items-center gap-2 text-[9px] font-bold tracking-[1.1px] text-[#758c7e]">
-            <span className="h-px w-4 bg-[#8eaf91]" /> FINANCIACIÓN PARA TUS METAS
+          <p className="mb-2 flex items-center gap-2 text-[13px] font-bold tracking-[1.1px] text-[#758c7e]">
+            <span className="h-px w-4 bg-[#8eaf91]" /> CRÉDITOS ESTUDIANTILES UCC
           </p>
-          <h1 className="font-display text-[25px] font-extrabold tracking-[-1px] text-[#1c302c] sm:text-[29px]">
+          <h1 className="font-display text-[32px] font-extrabold tracking-[-1px] text-[#1c302c] sm:text-[40px]">
             Hola, <span className="text-[#317452]">{userName || "estudiante"}.</span>
           </h1>
-          <p className="mt-1 text-[11px] text-[#818b85] sm:text-xs">Un impulso para eso que quieres lograr. ¿Qué tienes en mente?</p>
+          <p className="mt-1 text-[15px] text-[#818b85] sm:text-xs">Financia tu matrícula, libros y materiales del semestre. ¿Qué necesitas para seguir estudiando?</p>
         </div>
-        <a className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-[#dbe5db] bg-white px-2.5 py-2 text-[10px] font-bold text-[#345b44] transition hover:border-[#9fbea4] sm:px-3.5 sm:text-[11px]" href="#nueva-solicitud">
+        <a className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-[#dbe5db] bg-white px-2.5 py-2 text-[14px] font-bold text-[#345b44] transition hover:border-[#9fbea4] sm:px-3.5 sm:text-[15px]" href="#nueva-solicitud">
           <Icon className="h-4 w-4" name="plus" /> <span className="sm:hidden">Solicitar</span><span className="hidden sm:inline">Solicitar crédito</span>
         </a>
       </section>
 
-      <section aria-label="Información de CrediUCC" className="relative isolate flex min-h-[190px] overflow-hidden rounded-2xl bg-[#174b3d] px-5 py-6 text-white sm:px-8">
+      <section aria-label="Información de CrediUCC" className="relative isolate flex min-h-[300px] overflow-hidden rounded-3xl bg-[#174b3d] px-7 py-10 text-white shadow-[0_26px_54px_-26px_rgba(15,58,47,0.70)] sm:px-12">
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_68%_115%,#72a27955_0,transparent_34%)]" />
-        <div className="relative z-10 max-w-[58%] sm:max-w-[56%]">
-          <span className="inline-flex items-center gap-2 text-[8px] font-bold tracking-[1.15px] text-[#bed4bd]">
-            <Icon className="h-3.5 w-3.5 text-[#d1dba0]" name="sparkle" /> TU FUTURO, A TU RITMO
+        <div className="relative z-10 max-w-[60%] self-center sm:max-w-[54%]">
+          <span className="inline-flex items-center gap-2 text-[12px] font-bold tracking-[1.15px] text-[#bed4bd]">
+            <Icon className="h-3.5 w-3.5 text-[#d1dba0]" name="sparkle" /> TU CARRERA, A TU RITMO
           </span>
-          <h2 className="mt-2 font-display text-[21px] font-bold leading-tight tracking-[-.7px] sm:text-2xl">
-            Las grandes ideas<br />merecen <em className="not-italic text-[#c6d9a8]">un comienzo.</em>
+          <h2 className="mt-2 font-display text-[28px] font-bold leading-tight tracking-[-.7px] sm:text-[40px]">
+            Tu educación<br />merece <em className="not-italic text-[#c6d9a8]">un impulso.</em>
           </h2>
-          <p className="mt-2 max-w-[340px] text-[9px] leading-relaxed text-[#c0d3ca] sm:text-[10px]">
-            Financiación pensada para acompañar tus proyectos y tu vida universitaria.
+          <p className="mt-3 max-w-[460px] text-[13px] leading-relaxed text-[#c0d3ca] sm:text-[14px]">
+            Créditos estudiantiles para matrícula, materiales y sostenimiento, con respuesta inmediata y tasas preferenciales para estudiantes UCC.
           </p>
-          <a className="mt-2 inline-flex items-center gap-2 text-[10px] font-bold text-[#e1edcc]" href="#nueva-solicitud">
-            Conoce tu opción <Icon className="h-3.5 w-3.5" name="arrow" />
+          <a className="mt-2 inline-flex items-center gap-2 text-[14px] font-bold text-[#e1edcc]" href="#nueva-solicitud">
+            Conoce tu crédito <Icon className="h-3.5 w-3.5" name="arrow" />
           </a>
-          <p className="mt-1 text-[8px] font-semibold text-[#d5e4c2] sm:hidden">Tasas desde 1,2% mensual*</p>
+          <p className="mt-1 text-[12px] font-semibold text-[#d5e4c2] sm:hidden">Tasas desde 1,2% mensual*</p>
         </div>
         <div aria-hidden="true" className="absolute -right-7 top-0 h-full w-[46%] sm:right-[2%] sm:w-[40%]">
           <div className="absolute right-[15%] top-12 h-24 w-52 rotate-[-25deg] rounded-[50%] border border-[#c5d6a64a]" />
@@ -430,47 +430,47 @@ function SummaryView({ applications, isLoading, historyError, userName }: Readon
           <div className="absolute right-[28%] top-5 grid h-36 w-36 place-items-center rounded-full border border-[#b5c98938] bg-[radial-gradient(circle_at_44%_34%,#408468_0,#276b53_45%,#1b5140_78%)] shadow-[0_0_0_18px_#98b98b0a,0_0_0_38px_#98b98b08]">
             <span className="absolute left-9 top-8 grid h-14 w-14 place-items-center rounded-full border border-[#c6aa67] bg-[linear-gradient(145deg,#d7c27f,#aa8540)] text-xl text-[#876e34]">$</span>
             <span className="absolute left-14 top-14 grid h-[68px] w-[68px] place-items-center rounded-full border border-[#e6d98d] bg-[linear-gradient(145deg,#f8edbd,#c99f4e)] font-display text-3xl text-[#826633] shadow-[inset_0_0_0_4px_#f4e5ac,inset_0_0_0_5px_#c79d4c]">
-              $<small className="absolute bottom-3 text-[7px] font-bold tracking-[1.5px]">UCC</small>
+              $<small className="absolute bottom-3 text-[11px] font-bold tracking-[1.5px]">UCC</small>
             </span>
             <span className="absolute left-5 top-3 text-base text-[#d6dfa9]">✳</span>
             <span className="absolute bottom-5 right-4 text-sm text-[#98c7a8]">✦</span>
           </div>
           <div className="absolute bottom-5 right-[1%] hidden items-center gap-2 rounded-lg border border-[#e3e7d74d] bg-[#285d49] px-3 py-2 shadow-lg sm:flex">
             <span className="grid h-6 w-6 place-items-center rounded-md bg-[#dce8c2] text-sm text-[#376747] sm:h-7 sm:w-7 sm:text-lg">↘</span>
-            <span><small className="block text-[7px] font-bold tracking-[1px] text-[#bad0bd]">TASAS DESDE</small><strong className="font-display text-sm">1,2% <i className="text-[8px] font-normal text-[#c4d6c3]">mensual</i></strong></span>
+            <span><small className="block text-[11px] font-bold tracking-[1px] text-[#bad0bd]">TASAS DESDE</small><strong className="font-display text-sm">1,2% <i className="text-[12px] font-normal text-[#c4d6c3]">mensual</i></strong></span>
           </div>
         </div>
-        <p className="absolute bottom-2 right-3 text-right text-[7px] text-[#b5cdbd]">*La tasa final depende de tu perfil y resultado de evaluación.</p>
+        <p className="absolute bottom-2 right-3 text-right text-[11px] text-[#b5cdbd]">*La tasa final depende de tu perfil y resultado de evaluación.</p>
       </section>
 
-      <section aria-label="Resumen de solicitudes" className="my-4 grid gap-2.5 sm:grid-cols-3">
-        <article className="relative flex min-h-[76px] items-center gap-3 overflow-hidden rounded-xl border border-[#e9ede8] bg-white px-4 py-3">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#e7f3eb] text-[#477954]"><Icon className="h-5 w-5" name="file" /></span>
-          <div className="grid min-w-0 gap-0.5"><span className="text-[9px] text-[#7d8981]">Solicitudes registradas</span><strong className="font-display text-xl font-extrabold text-[#20372d]">{applications.length}</strong><small className="text-[8px] text-[#a1aaa4]">En esta sesión</small></div>
-          <span className="absolute -right-4 -top-5 h-16 w-16 rounded-full bg-[#e7f3eb] opacity-50" />
+      <section aria-label="Resumen de solicitudes" className="my-8 grid gap-6 sm:grid-cols-3">
+        <article className="relative flex min-h-[132px] items-center gap-3 overflow-hidden rounded-2xl border border-[#e3e9e2] bg-white px-6 py-6 shadow-[0_14px_34px_-16px_rgba(23,75,61,0.30)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_46px_-18px_rgba(23,75,61,0.38)]">
+          <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#e7f3eb] text-[#477954]"><Icon className="h-7 w-7" name="file" /></span>
+          <div className="grid min-w-0 gap-1"><span className="text-[13px] text-[#7d8981]">Créditos solicitados</span><strong className="font-display text-3xl font-extrabold text-[#20372d]">{applications.length}</strong><small className="text-[12px] text-[#a1aaa4]">En esta sesión</small></div>
+          <span className="absolute -right-6 -top-8 h-24 w-24 rounded-full bg-[#e7f3eb] opacity-50" />
         </article>
-        <article className="relative flex min-h-[76px] items-center gap-3 overflow-hidden rounded-xl border border-[#e9ede8] bg-white px-4 py-3">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#f0edf8] text-[#7866a5]"><Icon className="h-5 w-5" name="check" /></span>
-          <div className="grid min-w-0 gap-0.5"><span className="text-[9px] text-[#7d8981]">Aprobadas</span><strong className="font-display text-xl font-extrabold text-[#20372d]">{approvedCount}</strong><small className="text-[8px] text-[#a1aaa4]">¡Un paso más cerca!</small></div>
-          <span className="absolute -right-4 -top-5 h-16 w-16 rounded-full bg-[#f0edf8] opacity-50" />
+        <article className="relative flex min-h-[132px] items-center gap-3 overflow-hidden rounded-2xl border border-[#e3e9e2] bg-white px-6 py-6 shadow-[0_14px_34px_-16px_rgba(23,75,61,0.30)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_46px_-18px_rgba(23,75,61,0.38)]">
+          <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#f0edf8] text-[#7866a5]"><Icon className="h-7 w-7" name="check" /></span>
+          <div className="grid min-w-0 gap-1"><span className="text-[13px] text-[#7d8981]">Créditos aprobados</span><strong className="font-display text-3xl font-extrabold text-[#20372d]">{approvedCount}</strong><small className="text-[12px] text-[#a1aaa4]">¡Un paso más cerca de tu meta!</small></div>
+          <span className="absolute -right-6 -top-8 h-24 w-24 rounded-full bg-[#f0edf8] opacity-50" />
         </article>
-        <article className="relative flex min-h-[76px] items-center gap-3 overflow-hidden rounded-xl border border-[#e9ede8] bg-white px-4 py-3">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#fff0e3] text-[#bd8054]"><Icon className="h-5 w-5" name="money" /></span>
-          <div className="grid min-w-0 gap-0.5"><span className="text-[9px] text-[#7d8981]">Valor solicitado</span><strong className="truncate font-display text-lg font-extrabold text-[#20372d]">{currency.format(requestedAmount)}</strong><small className="text-[8px] text-[#a1aaa4]">Total acumulado</small></div>
-          <span className="absolute -right-4 -top-5 h-16 w-16 rounded-full bg-[#fff0e3] opacity-50" />
+        <article className="relative flex min-h-[132px] items-center gap-3 overflow-hidden rounded-2xl border border-[#e3e9e2] bg-white px-6 py-6 shadow-[0_14px_34px_-16px_rgba(23,75,61,0.30)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_22px_46px_-18px_rgba(23,75,61,0.38)]">
+          <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#fff0e3] text-[#bd8054]"><Icon className="h-7 w-7" name="money" /></span>
+          <div className="grid min-w-0 gap-1"><span className="text-[13px] text-[#7d8981]">Monto solicitado</span><strong className="truncate font-display text-2xl font-extrabold text-[#20372d]">{currency.format(requestedAmount)}</strong><small className="text-[12px] text-[#a1aaa4]">Total de tus solicitudes</small></div>
+          <span className="absolute -right-6 -top-8 h-24 w-24 rounded-full bg-[#fff0e3] opacity-50" />
         </article>
       </section>
 
-      <section className="grid items-start gap-3.5 lg:grid-cols-[minmax(0,1.8fr)_minmax(245px,.82fr)]">
-        <article aria-label="Solicitudes recientes" className="rounded-xl border border-[#e8ece7] bg-white p-4 sm:p-5">
+      <section className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.7fr)_minmax(320px,.9fr)]">
+        <article aria-label="Solicitudes recientes" className="rounded-2xl border border-[#e3e9e2] bg-white p-6 sm:p-8 shadow-[0_14px_34px_-16px_rgba(23,75,61,0.30)]">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <div><p className="text-[8px] font-bold tracking-[1.1px] text-[#82958a]">TU ACTIVIDAD</p><h2 className="mt-1 font-display text-base font-extrabold text-[#1c302c]">Solicitudes recientes</h2></div>
-            <a className="inline-flex items-center gap-1 text-[9px] font-bold text-[#477553]" href="#mis-solicitudes">Ver todas <Icon className="h-3 w-3" name="arrow" /></a>
+            <div><p className="text-[12px] font-bold tracking-[1.1px] text-[#82958a]">TUS CRÉDITOS</p><h2 className="mt-1 font-display text-xl font-extrabold text-[#1c302c]">Solicitudes recientes</h2></div>
+            <a className="inline-flex items-center gap-1 text-[13px] font-bold text-[#477553]" href="#mis-solicitudes">Ver todas <Icon className="h-3 w-3" name="arrow" /></a>
           </div>
           <ul className="m-0 list-none p-0">
             {recent.map((application) => (
-              <li className="flex items-center gap-3 border-t border-[#eff1ee] py-2.5 text-[9px] text-[#6f7d73]" key={application.id}>
-                <span className="grid gap-0.5"><strong className="text-[#405649]">Solicitud #{application.id}</strong><small className="text-[8px] text-[#a0aaa2]">{formatDate(application.creado_en)}</small></span>
+              <li className="flex items-center gap-4 border-t border-[#eff1ee] py-4 text-[13px] text-[#6f7d73]" key={application.id}>
+                <span className="grid gap-0.5"><strong className="text-[#405649]">Solicitud #{application.id}</strong><small className="text-[12px] text-[#a0aaa2]">{formatDate(application.creado_en)}</small></span>
                 <span className="ml-auto">{currency.format(application.monto)}</span>
                 <StatusBadge approved={application.decision === "APROBADO"} />
               </li>
@@ -479,32 +479,32 @@ function SummaryView({ applications, isLoading, historyError, userName }: Readon
           <HistoryStatus error={historyError} isEmpty={applications.length === 0} isLoading={isLoading} />
         </article>
 
-        <aside className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-1">
-          <article className="rounded-xl border border-[#e8ece7] bg-white p-4 sm:p-5">
+        <aside className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
+          <article className="rounded-2xl border border-[#e3e9e2] bg-white p-6 sm:p-8 shadow-[0_14px_34px_-16px_rgba(23,75,61,0.30)]">
             <div className="flex items-center gap-2.5">
               <span className="grid h-8 w-8 place-items-center rounded-lg bg-[#edf4e9] text-[#6c9666]"><Icon className="h-4 w-4" name="sparkle" /></span>
-              <div><p className="text-[7px] font-bold tracking-[1px] text-[#82958a]">ANTES DE EMPEZAR</p><h2 className="mt-0.5 font-display text-sm font-extrabold text-[#1c302c]">¿Cómo funciona?</h2></div>
+              <div><p className="text-[11px] font-bold tracking-[1px] text-[#82958a]">ANTES DE EMPEZAR</p><h2 className="mt-0.5 font-display text-lg font-extrabold text-[#1c302c]">¿Cómo funciona?</h2></div>
             </div>
-            <p className="mb-2 mt-3 text-[9px] leading-relaxed text-[#89948d]">Revisamos tres criterios para darte una respuesta al instante.</p>
+            <p className="mb-2 mt-3 text-[13px] leading-relaxed text-[#89948d]">Para aprobar tu crédito estudiantil revisamos tres criterios y te respondemos al instante.</p>
             <ol className="m-0 list-none p-0">
-              {[["01", "Edad", "Entre 18 y 65 años"], ["02", "Score crediticio", "600 puntos o más"], ["03", "Ingresos mensuales", "Desde $2.000.000 COP"]].map(([number, title, description]) => (
-                <li className="flex min-h-[51px] items-center gap-2.5 border-t border-[#edf0ec]" key={number}>
-                  <span className="font-display text-[8px] font-bold text-[#acb7ac]">{number}</span>
-                  <span className="grid gap-1"><strong className="text-[9px] text-[#46584c]">{title}</strong><small className="text-[8px] text-[#9aa49d]">{description}</small></span>
-                  <span className="ml-auto grid h-[17px] w-[17px] place-items-center rounded-full bg-[#edf5ec] text-[9px] text-[#5c8c62]">✓</span>
+              {[["01", "Edad", "Entre 18 y 65 años"], ["02", "Puntaje crediticio", "600 puntos o más"], ["03", "Ingresos mensuales", "Desde $2.000.000 COP"]].map(([number, title, description]) => (
+                <li className="flex min-h-[64px] items-center gap-2.5 border-t border-[#edf0ec]" key={number}>
+                  <span className="font-display text-[12px] font-bold text-[#acb7ac]">{number}</span>
+                  <span className="grid gap-1"><strong className="text-[13px] text-[#46584c]">{title}</strong><small className="text-[12px] text-[#9aa49d]">{description}</small></span>
+                  <span className="ml-auto grid h-[17px] w-[17px] place-items-center rounded-full bg-[#edf5ec] text-[13px] text-[#5c8c62]">✓</span>
                 </li>
               ))}
             </ol>
           </article>
 
-          <article className="relative isolate min-h-[170px] overflow-hidden rounded-xl bg-[#e9efe1] p-4 sm:p-5">
+          <article className="relative isolate min-h-[240px] overflow-hidden rounded-2xl bg-[#e9efe1] p-6 sm:p-8 shadow-[0_14px_34px_-16px_rgba(23,75,61,0.30)]">
             <div aria-hidden="true" className="absolute -right-12 -top-14 -z-10 h-48 w-48 rounded-full border border-[#91a9814d] shadow-[0_0_0_16px_#91a9810b,0_0_0_32px_#91a9810b]" />
-            <div className="flex items-center gap-1.5 text-[7px] font-bold tracking-[.9px] text-[#718671]">
-              <Icon className="h-3.5 w-3.5 text-[#7c9a63]" name="sparkle" /> UN BENEFICIO PARA TI
+            <div className="flex items-center gap-1.5 text-[11px] font-bold tracking-[.9px] text-[#718671]">
+              <Icon className="h-3.5 w-3.5 text-[#7c9a63]" name="sparkle" /> BENEFICIO ESTUDIANTE UCC
             </div>
-            <h3 className="mt-3 font-display text-lg font-extrabold leading-tight tracking-[-.5px] text-[#284736]">Tu esfuerzo<br />tiene <em className="not-italic text-[#5c8458]">recompensa.</em></h3>
-            <p className="relative mt-1.5 max-w-[190px] text-[8px] leading-relaxed text-[#718273]">Si eres estudiante, podrías acceder a una tasa preferencial.</p>
-            <a className="mt-2 inline-flex items-center gap-1 text-[8px] font-bold text-[#3a6e4b]" href="#nueva-solicitud">Descubre tu tasa <Icon className="h-3 w-3" name="arrow" /></a>
+            <h3 className="mt-3 font-display text-2xl font-extrabold leading-tight tracking-[-.5px] text-[#284736]">Tu esfuerzo<br />tiene <em className="not-italic text-[#5c8458]">recompensa.</em></h3>
+            <p className="relative mt-1.5 max-w-[190px] text-[12px] leading-relaxed text-[#718273]">Si estudias en la UCC accedes a una tasa preferencial desde 1,2% mensual.</p>
+            <a className="mt-2 inline-flex items-center gap-1 text-[12px] font-bold text-[#3a6e4b]" href="#nueva-solicitud">Descubre tu tasa <Icon className="h-3 w-3" name="arrow" /></a>
             <span aria-hidden="true" className="absolute bottom-5 right-5 grid h-14 w-14 rotate-12 place-items-center rounded-full border border-[#c5bf82] bg-[linear-gradient(145deg,#efe4ad,#c6af65)] font-display text-2xl text-[#8a7540] shadow-[inset_0_0_0_4px_#f1e7be,inset_0_0_0_5px_#bd9f4e]">$</span>
           </article>
         </aside>
@@ -514,15 +514,15 @@ function SummaryView({ applications, isLoading, historyError, userName }: Readon
 }
 
 // ------------------------------------------------------------------ vista: Nueva solicitud
-const inputBox = "flex h-[38px] items-center rounded-lg border border-[#e5eae4] bg-[#fdfefd] px-2.5 transition focus-within:border-[#80a78a] focus-within:ring-4 focus-within:ring-[#39775112]";
-const inputText = "h-full w-full bg-transparent text-[10px] text-[#354c3e] outline-none placeholder:text-[#b1bbb4]";
+const inputBox = "flex h-[50px] items-center rounded-xl border border-[#e5eae4] bg-[#fdfefd] px-3.5 transition focus-within:border-[#80a78a] focus-within:ring-4 focus-within:ring-[#39775112]";
+const inputText = "h-full w-full bg-transparent text-[14px] text-[#354c3e] outline-none placeholder:text-[#b1bbb4]";
 
 function ResultCard({ feedback, onNewRequest }: Readonly<{ feedback: Feedback; onNewRequest: () => void }>) {
   const success = feedback.tone === "success";
   return (
     <output
       aria-live="polite"
-      className={`mb-4 grid gap-3 rounded-xl border px-4 py-3.5 text-[11px] leading-relaxed ${success ? "border-[#d9e8dc] bg-[#f2f8f2] text-[#3e6e4b]" : "border-[#eedbd4] bg-[#fff7f4] text-[#a95948]"}`}
+      className={`mb-4 grid gap-3 rounded-xl border px-4 py-3.5 text-[15px] leading-relaxed ${success ? "border-[#d9e8dc] bg-[#f2f8f2] text-[#3e6e4b]" : "border-[#eedbd4] bg-[#fff7f4] text-[#a95948]"}`}
     >
       <span className="flex items-start gap-2">
         <span className="font-extrabold">{success ? "✓" : "!"}</span>
@@ -530,10 +530,10 @@ function ResultCard({ feedback, onNewRequest }: Readonly<{ feedback: Feedback; o
       </span>
       {feedback.application && (
         <span className="flex flex-wrap gap-2">
-          <a className="inline-flex items-center gap-1.5 rounded-lg bg-[#286649] px-3 py-2 text-[10px] font-bold text-white transition hover:bg-[#1e573c]" href="#mis-solicitudes">
+          <a className="inline-flex items-center gap-1.5 rounded-lg bg-[#286649] px-3 py-2 text-[14px] font-bold text-white transition hover:bg-[#1e573c]" href="#mis-solicitudes">
             Ver mis solicitudes <Icon className="h-3.5 w-3.5" name="arrow" />
           </a>
-          <button className="rounded-lg border border-[#d3dfd4] bg-white px-3 py-2 text-[10px] font-bold text-[#345b44] transition hover:border-[#9fbea4]" onClick={onNewRequest} type="button">
+          <button className="rounded-lg border border-[#d3dfd4] bg-white px-3 py-2 text-[14px] font-bold text-[#345b44] transition hover:border-[#9fbea4]" onClick={onNewRequest} type="button">
             Hacer otra solicitud
           </button>
         </span>
@@ -614,27 +614,27 @@ function NewRequestView({ serviceOnline, defaultEmail, defaultName, defaultAge, 
   }
 
   return (
-    <section aria-label="Nueva solicitud" className="mx-auto max-w-[760px]">
-      <article className="rounded-xl border border-[#e8ece7] bg-white p-4 sm:p-6">
+    <section aria-label="Nueva solicitud" className="mx-auto max-w-[980px]">
+      <article className="rounded-2xl border border-[#e3e9e2] bg-white p-6 sm:p-10 shadow-[0_14px_34px_-16px_rgba(23,75,61,0.30)]">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[8px] font-bold tracking-[1.1px] text-[#82958a]">EMPECEMOS</p>
-            <h1 className="mt-1 font-display text-base font-extrabold tracking-[-.4px] text-[#1c302c] sm:text-lg">Cuéntanos sobre ti</h1>
-            <p className="mt-1 text-[10px] text-[#8a948e]">Completa tus datos y evaluaremos tu solicitud al instante.</p>
+            <p className="text-[12px] font-bold tracking-[1.1px] text-[#82958a]">CRÉDITO ESTUDIANTIL</p>
+            <h1 className="mt-1 font-display text-xl font-extrabold tracking-[-.4px] text-[#1c302c] sm:text-[28px]">Solicita tu crédito estudiantil</h1>
+            <p className="mt-1 text-[14px] text-[#8a948e]">Completa tus datos y evaluaremos tu solicitud al instante.</p>
           </div>
         </div>
 
-        <div className="my-4 flex items-center gap-2 rounded-lg border border-[#e8eee6] bg-[#f7faf6] px-3 py-2.5 text-[9px] leading-relaxed text-[#7a887f]" role="note">
-          <span className="grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full border border-[#a6bda8] font-display text-[10px] font-bold text-[#63866d]">i</span>
-          <span>Requisitos: edad entre 18 y 65 años, score de 600 o más e ingresos desde $2.000.000 COP.</span>
+        <div className="my-4 flex items-center gap-2 rounded-lg border border-[#e8eee6] bg-[#f7faf6] px-3 py-2.5 text-[13px] leading-relaxed text-[#7a887f]" role="note">
+          <span className="grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full border border-[#a6bda8] font-display text-[14px] font-bold text-[#63866d]">i</span>
+          <span>Requisitos: edad entre 18 y 65 años, puntaje crediticio de 600 o más e ingresos desde $2.000.000 COP.</span>
         </div>
 
         {serviceOnline === false && <ConnectionWarning />}
         {feedback && <ResultCard feedback={feedback} onNewRequest={() => setFeedback(null)} />}
 
-        <form className="grid gap-x-3 gap-y-3.5 sm:grid-cols-2" onSubmit={handleSubmit}>
+        <form className="grid gap-x-5 gap-y-5 sm:grid-cols-2" onSubmit={handleSubmit}>
           <label className="grid gap-1.5 sm:col-span-2">
-            <span className="text-[9px] font-bold text-[#4a5e52]">Nombre completo <b className="text-[#c7795f]">*</b></span>
+            <span className="text-[13px] font-bold text-[#4a5e52]">Nombre completo <b className="text-[#c7795f]">*</b></span>
             <span className={inputBox}>
               <Icon className="mr-2 h-4 w-4 shrink-0 text-[#9aa79d]" name="user" />
               <input autoComplete="name" className={inputText} defaultValue={defaultName} maxLength={120} name="nombre" onChange={onNameChange} placeholder="Ej. Laura Rojas" required />
@@ -642,7 +642,7 @@ function NewRequestView({ serviceOnline, defaultEmail, defaultName, defaultAge, 
           </label>
 
           <label className="grid gap-1.5 sm:col-span-2">
-            <span className="text-[9px] font-bold text-[#4a5e52]">Correo electrónico <b className="text-[#c7795f]">*</b></span>
+            <span className="text-[13px] font-bold text-[#4a5e52]">Correo electrónico <b className="text-[#c7795f]">*</b></span>
             <span className={inputBox}>
               <Icon className="mr-2 h-4 w-4 shrink-0 text-[#9aa79d]" name="mail" />
               <input autoComplete="email" className={inputText} defaultValue={defaultEmail} maxLength={254} name="email" placeholder="nombre@correo.com" required type="email" />
@@ -650,54 +650,54 @@ function NewRequestView({ serviceOnline, defaultEmail, defaultName, defaultAge, 
           </label>
 
           <label className="grid gap-1.5">
-            <span className="text-[9px] font-bold text-[#4a5e52]">Edad <b className="text-[#c7795f]">*</b></span>
+            <span className="text-[13px] font-bold text-[#4a5e52]">Edad <b className="text-[#c7795f]">*</b></span>
             <span className={inputBox}>
               <input className={inputText} defaultValue={defaultAge ?? undefined} inputMode="numeric" max={120} min={0} name="edad" onKeyDown={onlyDigitKeys} placeholder="22" required type="number" />
-              <span className="text-[9px] text-[#a1aaa4]">años</span>
+              <span className="text-[13px] text-[#a1aaa4]">años</span>
             </span>
-            <small className="text-[8px] text-[#9aa49c]">Elegibilidad: entre 18 y 65 años</small>
+            <small className="text-[12px] text-[#9aa49c]">Elegibilidad: entre 18 y 65 años</small>
           </label>
 
           <label className="grid gap-1.5">
-            <span className="text-[9px] font-bold text-[#4a5e52]">Score crediticio <b className="text-[#c7795f]">*</b></span>
+            <span className="text-[13px] font-bold text-[#4a5e52]">Puntaje crediticio <b className="text-[#c7795f]">*</b></span>
             <span className={inputBox}>
               <input className={inputText} inputMode="numeric" max={850} min={300} name="score" onKeyDown={onlyDigitKeys} placeholder="720" required type="number" />
-              <span className="text-[9px] text-[#a1aaa4]">/ 850</span>
+              <span className="text-[13px] text-[#a1aaa4]">/ 850</span>
             </span>
-            <small className="text-[8px] text-[#9aa49c]">Entre 300 y 850. Mínimo para aprobación: 600</small>
+            <small className="text-[12px] text-[#9aa49c]">Entre 300 y 850. Mínimo para aprobación: 600</small>
           </label>
 
           <label className="grid gap-1.5">
-            <span className="text-[9px] font-bold text-[#4a5e52]">Ingresos mensuales <b className="text-[#c7795f]">*</b></span>
+            <span className="text-[13px] font-bold text-[#4a5e52]">Ingresos mensuales <b className="text-[#c7795f]">*</b></span>
             <span className={inputBox}>
-              <span className="mr-2 text-[10px] font-semibold text-[#718577]">$</span>
+              <span className="mr-2 text-[14px] font-semibold text-[#718577]">$</span>
               <input className={inputText} inputMode="numeric" maxLength={13} name="ingresos" onChange={handlePesosChange(setIngresos)} placeholder="2.500.000" required type="text" value={ingresos} />
-              <span className="text-[9px] text-[#a1aaa4]">COP</span>
+              <span className="text-[13px] text-[#a1aaa4]">COP</span>
             </span>
-            <small className="text-[8px] text-[#9aa49c]">Mínimo para aprobación: $2.000.000 COP</small>
+            <small className="text-[12px] text-[#9aa49c]">Mínimo para aprobación: $2.000.000 COP</small>
           </label>
 
-          <label className="flex min-h-[51px] cursor-pointer items-center rounded-lg border border-[#e5eae4] bg-[#fdfefd] px-2.5 py-2">
-            <span className="grid gap-1 text-[9px] font-bold text-[#506356]">Beneficio estudiante<small className="text-[8px] font-normal text-[#99a39b]">Cuéntanos si estudias en la UCC</small></span>
+          <label className="flex min-h-[64px] cursor-pointer items-center rounded-lg border border-[#e5eae4] bg-[#fdfefd] px-2.5 py-2">
+            <span className="grid gap-1 text-[13px] font-bold text-[#506356]">Beneficio estudiante<small className="text-[12px] font-normal text-[#99a39b]">Cuéntanos si estudias en la UCC</small></span>
             <input className="peer sr-only" defaultChecked name="es_estudiante" type="checkbox" />
             <span aria-hidden="true" className="relative ml-auto h-[18px] w-8 rounded-full bg-[#d4dcd5] transition peer-checked:bg-[#4f8d63] after:absolute after:left-[3px] after:top-[3px] after:h-3 after:w-3 after:rounded-full after:bg-white after:shadow after:transition peer-checked:after:translate-x-3.5 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-[#39775155]" />
           </label>
 
           <label className="grid gap-1.5 sm:col-span-2">
-            <span className="text-[9px] font-bold text-[#4a5e52]">¿Cuánto necesitas? <b className="text-[#c7795f]">*</b></span>
+            <span className="text-[13px] font-bold text-[#4a5e52]">¿Cuánto necesitas para tus estudios? <b className="text-[#c7795f]">*</b></span>
             <span className={inputBox}>
-              <span className="mr-2 text-[10px] font-semibold text-[#718577]">$</span>
+              <span className="mr-2 text-[14px] font-semibold text-[#718577]">$</span>
               <input className={inputText} inputMode="numeric" maxLength={9} name="monto" onChange={handlePesosChange(setMonto)} placeholder="1.500.000" required type="text" value={monto} />
-              <span className="text-[9px] text-[#a1aaa4]">COP</span>
+              <span className="text-[13px] text-[#a1aaa4]">COP</span>
             </span>
-            <small className="text-[8px] text-[#9aa49c]">Puedes solicitar entre $100.000 y $5.000.000 COP</small>
+            <small className="text-[12px] text-[#9aa49c]">Puedes solicitar entre $100.000 y $5.000.000 COP</small>
           </label>
 
           <div className="mt-1 flex flex-col gap-3 border-t border-[#edf0ec] pt-3 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
-            <p className="m-0 flex items-center gap-1.5 text-[8px] text-[#97a199]">
+            <p className="m-0 flex items-center gap-1.5 text-[12px] text-[#97a199]">
               <Icon className="h-3.5 w-3.5 text-[#6a9271]" name="clock" /> Evaluación inmediata <span className="text-[#c5ccc6]">·</span> Sin compromiso
             </p>
-            <button className="inline-flex min-h-[39px] items-center justify-center gap-2 rounded-lg bg-[#286649] px-4 text-[10px] font-bold text-white transition hover:bg-[#1e573c] disabled:cursor-wait disabled:opacity-60" disabled={isSubmitting} type="submit">
+            <button className="inline-flex min-h-[50px] items-center justify-center gap-2 rounded-lg bg-[#286649] px-4 text-[14px] font-bold text-white transition hover:bg-[#1e573c] disabled:cursor-wait disabled:opacity-60" disabled={isSubmitting} type="submit">
               {isSubmitting ? "Evaluando..." : "Evaluar mi solicitud"}
               <Icon className="h-4 w-4" name="arrow" />
             </button>
@@ -713,27 +713,27 @@ type ApplicationsViewProps = HistoryProps & { isRefreshing: boolean; onRefresh: 
 
 function ApplicationsView({ applications, isLoading, historyError, isRefreshing, onRefresh }: Readonly<ApplicationsViewProps>) {
   return (
-    <section aria-label="Mis solicitudes" className="rounded-xl border border-[#e8ece7] bg-white p-4 sm:p-5">
+    <section aria-label="Mis solicitudes" className="rounded-2xl border border-[#e3e9e2] bg-white p-6 sm:p-8 shadow-[0_14px_34px_-16px_rgba(23,75,61,0.30)]">
       <div className="mb-3.5 flex items-center justify-between gap-3">
-        <div><p className="text-[8px] font-bold tracking-[1.1px] text-[#82958a]">TU ACTIVIDAD</p><h1 className="mt-1 font-display text-base font-extrabold text-[#1c302c]">Mis solicitudes</h1></div>
+        <div><p className="text-[12px] font-bold tracking-[1.1px] text-[#82958a]">TUS CRÉDITOS</p><h1 className="mt-1 font-display text-xl font-extrabold text-[#1c302c]">Mis solicitudes</h1></div>
         <div className="flex items-center gap-2">
-          <a className="inline-flex items-center gap-1.5 rounded-md bg-[#286649] px-2.5 py-2 text-[9px] font-bold text-white transition hover:bg-[#1e573c]" href="#nueva-solicitud">
+          <a className="inline-flex items-center gap-1.5 rounded-md bg-[#286649] px-2.5 py-2 text-[13px] font-bold text-white transition hover:bg-[#1e573c]" href="#nueva-solicitud">
             <Icon className="h-3.5 w-3.5" name="plus" /> <span className="hidden sm:inline">Nueva solicitud</span>
           </a>
-          <button aria-label="Actualizar solicitudes" className="inline-flex items-center gap-1.5 rounded-md border border-[#e5eae4] px-2.5 py-2 text-[9px] text-[#64746a] transition hover:border-[#b8cdbb] disabled:opacity-50" disabled={isRefreshing} onClick={onRefresh} type="button">
+          <button aria-label="Actualizar solicitudes" className="inline-flex items-center gap-1.5 rounded-md border border-[#e5eae4] px-2.5 py-2 text-[13px] text-[#64746a] transition hover:border-[#b8cdbb] disabled:opacity-50" disabled={isRefreshing} onClick={onRefresh} type="button">
             <Icon className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} name="refresh" /> <span className="hidden sm:inline">Actualizar</span>
           </button>
         </div>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[610px] border-collapse text-left">
-          <thead className="bg-[#f7f9f6] text-[8px] text-[#929e95]">
+          <thead className="bg-[#f7f9f6] text-[12px] text-[#929e95]">
             <tr><th className="px-3 py-2.5 font-semibold">Solicitud</th><th className="px-3 py-2.5 font-semibold">Fecha</th><th className="px-3 py-2.5 font-semibold">Monto</th><th className="px-3 py-2.5 font-semibold">Estado</th><th className="px-3 py-2.5 font-semibold">Tasa mensual</th></tr>
           </thead>
           <tbody>
             {applications.map((application) => (
-              <tr className="border-b border-[#eff1ee] text-[9px] text-[#6f7d73] last:border-0" key={application.id}>
-                <td className="px-3 py-3"><strong className="block text-[#405649]">Solicitud #{application.id}</strong><small className="mt-1 block text-[8px] text-[#a0aaa2]">{application.nombre} · {application.email}</small></td>
+              <tr className="border-b border-[#eff1ee] text-[13px] text-[#6f7d73] last:border-0" key={application.id}>
+                <td className="px-3 py-3"><strong className="block text-[#405649]">Solicitud #{application.id}</strong><small className="mt-1 block text-[12px] text-[#a0aaa2]">{application.nombre} · {application.email}</small></td>
                 <td className="px-3 py-3">{formatDate(application.creado_en)}</td>
                 <td className="px-3 py-3">{currency.format(application.monto)}</td>
                 <td className="px-3 py-3"><StatusBadge approved={application.decision === "APROBADO"} /></td>
@@ -744,7 +744,7 @@ function ApplicationsView({ applications, isLoading, historyError, isRefreshing,
         </table>
       </div>
       <HistoryStatus error={historyError} isEmpty={applications.length === 0} isLoading={isLoading} />
-      <p className="mt-2 flex items-center gap-2 border-t border-[#eff1ee] pt-3 text-[8px] text-[#a0aaa2]">
+      <p className="mt-2 flex items-center gap-2 border-t border-[#eff1ee] pt-3 text-[12px] text-[#a0aaa2]">
         <span className="h-[5px] w-[5px] rounded-full bg-[#71b584]" /> Tus solicitudes se guardan mientras la sesión de la aplicación esté activa.
       </p>
     </section>
@@ -765,7 +765,7 @@ function Brand() {
       </span>
       <span className="font-display text-xl font-extrabold tracking-[-1px]">
         credi<span className="text-[#a8c9a7]">ucc</span>
-        <small className="mt-1 block text-[8px] font-semibold tracking-[1.2px] text-[#9db5a8]">FINANCIACIÓN ESTUDIANTIL</small>
+        <small className="mt-1 block text-[12px] font-semibold tracking-[1.2px] text-[#9db5a8]">CRÉDITOS ESTUDIANTILES</small>
       </span>
     </span>
   );
@@ -837,9 +837,9 @@ function validateLogin(data: FormData): FieldErrors {
 function AuthField({ label, error, name, children }: Readonly<{ label: string; error?: string; name: FieldName; children: ReactNode }>) {
   return (
     <label className="grid gap-1.5">
-      <span className="text-[9px] font-bold text-[#4a5e52]">{label} <b className="text-[#c7795f]">*</b></span>
+      <span className="text-[13px] font-bold text-[#4a5e52]">{label} <b className="text-[#c7795f]">*</b></span>
       <span className={`${inputBox} ${error ? "border-[#e2a99a] bg-[#fffaf8]" : ""}`}>{children}</span>
-      {error && <small className="text-[9px] font-semibold text-[#b4553f]" id={`error-${name}`}>{error}</small>}
+      {error && <small className="text-[13px] font-semibold text-[#b4553f]" id={`error-${name}`}>{error}</small>}
     </label>
   );
 }
@@ -909,7 +909,7 @@ function AuthView({ notice, onAuthenticated }: Readonly<{ notice: string; onAuth
   }
 
   const tabClass = (active: boolean) =>
-    `flex-1 rounded-md px-3 py-2 text-[10px] font-bold transition ${active ? "bg-white text-[#1f4a37] shadow-sm" : "text-[#6f8075] hover:text-[#1f4a37]"}`;
+    `flex-1 rounded-md px-3 py-2 text-[14px] font-bold transition ${active ? "bg-white text-[#1f4a37] shadow-sm" : "text-[#6f8075] hover:text-[#1f4a37]"}`;
   let submitLabel = isLogin ? "Ingresar" : "Crear mi cuenta";
   if (isSubmitting) submitLabel = "Un momento...";
 
@@ -925,24 +925,24 @@ function AuthView({ notice, onAuthenticated }: Readonly<{ notice: string; onAuth
         <span className="absolute bottom-[18%] left-[10%] text-xl text-[#98c7a855]">✳</span>
       </div>
 
-      <div className="grid w-full max-w-[900px] overflow-hidden rounded-2xl border border-[#ffffff26] bg-white shadow-[0_30px_80px_-20px_#00000080] md:grid-cols-[1fr_1.15fr]">
+      <div className="grid w-full max-w-[1000px] overflow-hidden rounded-3xl border border-[#ffffff26] bg-white shadow-[0_30px_80px_-20px_#00000080] md:grid-cols-[1fr_1.15fr]">
         <section aria-label="Bienvenida" className="relative isolate hidden flex-col justify-between bg-[#174b3d] p-8 text-white md:flex">
           <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_70%_110%,#72a27955_0,transparent_45%)]" />
           <Brand />
           <div>
             <h2 className="font-display text-2xl font-bold leading-tight tracking-[-.7px]">
-              Las grandes ideas<br />merecen <em className="not-italic text-[#c6d9a8]">un comienzo.</em>
+              Tu educación<br />merece <em className="not-italic text-[#c6d9a8]">un impulso.</em>
             </h2>
-            <p className="mt-3 max-w-[300px] text-[11px] leading-relaxed text-[#c0d3ca]">
-              Solicita tu microcrédito estudiantil, conoce la respuesta al instante y consulta tus solicitudes cuando quieras.
+            <p className="mt-3 max-w-[300px] text-[15px] leading-relaxed text-[#c0d3ca]">
+              Solicita tu crédito estudiantil, conoce la respuesta al instante y sigue tus solicitudes desde un solo lugar.
             </p>
           </div>
-          <p className="text-[9px] text-[#a8beb2]">Tasas desde 1,2% mensual · Montos de $100.000 a $5.000.000 COP</p>
+          <p className="text-[13px] text-[#a8beb2]">Tasas desde 1,2% mensual · Montos de $100.000 a $5.000.000 COP</p>
         </section>
 
         <section aria-label="Acceso" className="p-6 sm:p-9">
           <div className="mb-6 md:hidden"><span className="inline-flex rounded-xl bg-[#174b3d] px-3 py-2 text-white"><Brand /></span></div>
-          <p className="text-[9px] font-bold tracking-[1.1px] text-[#82958a]">{isLogin ? "BIENVENIDO DE NUEVO" : "EMPIEZA HOY"}</p>
+          <p className="text-[13px] font-bold tracking-[1.1px] text-[#82958a]">{isLogin ? "BIENVENIDO DE NUEVO" : "EMPIEZA HOY"}</p>
           <h1 className="mt-1 font-display text-xl font-extrabold tracking-[-.5px] text-[#1c302c]">
             {isLogin ? "Ingresa a tu cuenta" : "Crea tu cuenta"}
           </h1>
@@ -955,7 +955,7 @@ function AuthView({ notice, onAuthenticated }: Readonly<{ notice: string; onAuth
           {message && (
             <output
               aria-live="polite"
-              className={`mb-4 flex items-start gap-2 rounded-lg border px-3 py-2.5 text-[10px] leading-relaxed ${message.tone === "success" ? "border-[#d9e8dc] bg-[#f2f8f2] text-[#3e6e4b]" : "border-[#eedbd4] bg-[#fff7f4] text-[#a95948]"}`}
+              className={`mb-4 flex items-start gap-2 rounded-lg border px-3 py-2.5 text-[14px] leading-relaxed ${message.tone === "success" ? "border-[#d9e8dc] bg-[#f2f8f2] text-[#3e6e4b]" : "border-[#eedbd4] bg-[#fff7f4] text-[#a95948]"}`}
             >
               <span className="font-extrabold">{message.tone === "success" ? "✓" : "!"}</span>
               <span>{message.message}</span>
@@ -973,7 +973,7 @@ function AuthView({ notice, onAuthenticated }: Readonly<{ notice: string; onAuth
                 </div>
                 <AuthField error={errors.edad} label="Edad" name="edad">
                   <input className={inputText} inputMode="numeric" max={REGISTRATION_AGE.max} min={REGISTRATION_AGE.min} onKeyDown={onlyDigitKeys} placeholder="Ej. 20" type="number" {...fieldProps("edad")} />
-                  <span className="text-[9px] text-[#a1aaa4]">años</span>
+                  <span className="text-[13px] text-[#a1aaa4]">años</span>
                 </AuthField>
                 <AuthField error={errors.semestre} label="Semestre" name="semestre">
                   <select className={`${inputText} cursor-pointer`} defaultValue="" {...fieldProps("semestre")}>
@@ -1002,16 +1002,16 @@ function AuthView({ notice, onAuthenticated }: Readonly<{ notice: string; onAuth
               </AuthField>
             )}
             {!isLogin && (
-              <p className="text-[9px] leading-relaxed text-[#8f9a93] sm:col-span-2">
+              <p className="text-[13px] leading-relaxed text-[#8f9a93] sm:col-span-2">
                 La contraseña debe tener mínimo {SECRET_LENGTH.min} caracteres, con letras y números, y sin espacios.
               </p>
             )}
-            <button className="mt-1 inline-flex min-h-[40px] items-center justify-center gap-2 rounded-lg bg-[#286649] px-4 text-[11px] font-bold text-white transition hover:bg-[#1e573c] disabled:cursor-wait disabled:opacity-60 sm:col-span-2" disabled={isSubmitting} type="submit">
+            <button className="mt-1 inline-flex min-h-[50px] items-center justify-center gap-2 rounded-lg bg-[#286649] px-4 text-[15px] font-bold text-white transition hover:bg-[#1e573c] disabled:cursor-wait disabled:opacity-60 sm:col-span-2" disabled={isSubmitting} type="submit">
               {submitLabel}
               <Icon className="h-4 w-4" name="arrow" />
             </button>
           </form>
-          <p className="mt-5 text-center text-[9px] text-[#8f9a93]">
+          <p className="mt-5 text-center text-[13px] text-[#8f9a93]">
             Tus datos de acceso los protege Supabase Auth; CrediUCC nunca guarda tu contraseña.
           </p>
         </section>
@@ -1049,24 +1049,24 @@ function ProfileMenu({ session, onLogout }: Readonly<{ session: Session; onLogou
         onClick={() => setOpen((current) => !current)}
         type="button"
       >
-        <span aria-hidden="true" className="grid h-8 w-8 place-items-center rounded-full border border-[#cfe0d1] bg-[#286649] text-[10px] font-bold text-white">{initialsOf(session)}</span>
-        <span className="hidden max-w-[160px] truncate text-[10px] font-semibold text-[#43544b] md:inline">{firstName(session)}</span>
+        <span aria-hidden="true" className="grid h-8 w-8 place-items-center rounded-full border border-[#cfe0d1] bg-[#286649] text-[14px] font-bold text-white">{initialsOf(session)}</span>
+        <span className="hidden max-w-[160px] truncate text-[14px] font-semibold text-[#43544b] md:inline">{firstName(session)}</span>
       </button>
       {open && (
-        <section aria-label="Perfil del usuario" className="absolute right-0 top-11 z-40 w-[260px] rounded-xl border border-[#e3e9e2] bg-white p-4 shadow-[0_18px_40px_-12px_#0f2a2133]">
+        <section aria-label="Perfil del usuario" className="absolute right-0 top-11 z-40 w-[300px] rounded-2xl border border-[#e3e9e2] bg-white p-5 shadow-[0_18px_40px_-12px_#0f2a2133]">
           <div className="flex items-center gap-3">
             <span aria-hidden="true" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#286649] text-sm font-bold text-white">{initialsOf(session)}</span>
             <div className="min-w-0">
-              <strong className="block truncate font-display text-[13px] text-[#1c302c]">{session.nombre || "Estudiante UCC"}</strong>
-              <span className="block truncate text-[10px] text-[#7d8981]">{session.email}</span>
+              <strong className="block truncate font-display text-[16px] text-[#1c302c]">{session.nombre || "Estudiante UCC"}</strong>
+              <span className="block truncate text-[14px] text-[#7d8981]">{session.email}</span>
             </div>
           </div>
-          <dl className="my-3 grid grid-cols-2 gap-2 border-y border-[#eef1ed] py-3 text-[10px]">
+          <dl className="my-3 grid grid-cols-2 gap-2 border-y border-[#eef1ed] py-3 text-[14px]">
             <div><dt className="text-[#9aa39d]">Edad</dt><dd className="font-semibold text-[#43544b]">{session.edad == null ? "—" : `${session.edad} años`}</dd></div>
             <div><dt className="text-[#9aa39d]">Semestre</dt><dd className="font-semibold text-[#43544b]">{session.semestre == null ? "—" : `${session.semestre}.º`}</dd></div>
           </dl>
           <button
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#eedbd4] bg-[#fff7f4] px-3 py-2 text-[10px] font-bold text-[#a95948] transition hover:bg-[#fdeee8]"
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#eedbd4] bg-[#fff7f4] px-3 py-2 text-[14px] font-bold text-[#a95948] transition hover:bg-[#fdeee8]"
             onClick={onLogout}
             type="button"
           >
@@ -1081,7 +1081,7 @@ function ProfileMenu({ session, onLogout }: Readonly<{ session: Session; onLogou
 function LoadingScreen() {
   return (
     <main className="grid min-h-screen place-items-center bg-[#f3f6f2]">
-      <p className="flex items-center gap-2 text-[11px] text-[#738078]"><span className="h-2 w-2 animate-pulse rounded-full bg-[#d1b76a]" /> Conectando con CrediUCC...</p>
+      <p className="flex items-center gap-2 text-[15px] text-[#738078]"><span className="h-2 w-2 animate-pulse rounded-full bg-[#d1b76a]" /> Conectando con CrediUCC...</p>
     </main>
   );
 }
@@ -1183,7 +1183,7 @@ export default function Home() {
           </span>
           <span className="font-display text-xl font-extrabold tracking-[-1px]">
             credi<span className="text-[#a8c9a7]">ucc</span>
-            <small className="mt-1 block text-[8px] font-semibold tracking-[1.2px] text-[#9db5a8]">FINANCIACIÓN ESTUDIANTIL</small>
+            <small className="mt-1 block text-[12px] font-semibold tracking-[1.2px] text-[#9db5a8]">CRÉDITOS ESTUDIANTILES</small>
           </span>
         </a>
 
@@ -1193,13 +1193,13 @@ export default function Home() {
             return (
               <a
                 aria-current={active ? "page" : undefined}
-                className={`flex h-10 items-center justify-center gap-3 rounded-lg px-3 transition md:justify-start ${active ? "bg-[#2b5145] text-white" : "text-[#bbcbc2] hover:bg-[#2b5145] hover:text-white"}`}
+                className={`flex h-12 items-center justify-center gap-3 rounded-xl px-3.5 transition md:justify-start ${active ? "bg-[#2b5145] text-white" : "text-[#bbcbc2] hover:bg-[#2b5145] hover:text-white"}`}
                 href={item.hash}
                 key={item.view}
                 title={item.label}
               >
                 <Icon className="h-[18px] w-[18px]" name={item.icon} />
-                <span className="hidden text-xs font-medium sm:inline">{item.label}</span>
+                <span className="hidden text-sm font-medium sm:inline">{item.label}</span>
               </a>
             );
           })}
@@ -1211,9 +1211,9 @@ export default function Home() {
               <span className="text-base">?</span>
             </span>
             <strong className="text-xs">¿Necesitas ayuda?</strong>
-            <span className="text-[10px] text-[#b0c5ba]">Acércate a tu campus UCC para recibir orientación.</span>
+            <span className="text-[14px] text-[#b0c5ba]">Acércate a Bienestar Universitario de tu campus UCC.</span>
           </div>
-          <div className="mt-5 flex items-center gap-2 px-1 text-[10px] text-[#a8beb2]">
+          <div className="mt-5 flex items-center gap-2 px-1 text-[14px] text-[#a8beb2]">
             <span className="h-2 w-2 rounded-full bg-[#71b584]" />
             <span>Portal CrediUCC</span>
             <span className="ml-auto text-[#819e90]">v1.0</span>
@@ -1222,12 +1222,12 @@ export default function Home() {
       </aside>
 
       <main className="min-w-0 flex-1 md:ml-64">
-        <header className="flex h-14 items-center justify-between border-b border-[#e8ece6] bg-[#fbfcfa] px-4 sm:px-7 lg:px-11">
-          <div className="flex items-center gap-2 text-[11px] text-[#9aa39d]">
+        <header className="flex h-16 items-center justify-between border-b border-[#e8ece6] bg-[#fbfcfa] px-4 sm:px-7 lg:px-11">
+          <div className="flex items-center gap-2 text-[15px] text-[#9aa39d]">
             Portal <span className="text-[#c4cbc6]">/</span> <strong className="font-semibold text-[#43544b]">{current.label}</strong>
           </div>
           <div className="flex items-center gap-3 sm:gap-4">
-            <div className="flex items-center gap-2 text-[10px] text-[#738078]" aria-live="polite">
+            <div className="flex items-center gap-2 text-[14px] text-[#738078]" aria-live="polite">
               <span className={`h-2 w-2 rounded-full ${status.dot}`} />
               <span className="hidden sm:inline">{status.label}</span>
             </div>
@@ -1235,7 +1235,7 @@ export default function Home() {
             {session ? (
               <ProfileMenu onLogout={() => void handleLogout()} session={session} />
             ) : (
-              <span className="grid h-8 w-8 place-items-center rounded-full border border-[#dfe9df] bg-[#edf4ed] text-[10px] font-bold text-[#426c52]" aria-label="Comunidad UCC">UC</span>
+              <span className="grid h-8 w-8 place-items-center rounded-full border border-[#dfe9df] bg-[#edf4ed] text-[14px] font-bold text-[#426c52]" aria-label="Comunidad UCC">UC</span>
             )}
           </div>
         </header>
@@ -1264,9 +1264,9 @@ export default function Home() {
             />
           )}
 
-          <footer className="mt-4 flex items-center gap-1 text-[8px] text-[#a3aca5]">
+          <footer className="mt-4 flex items-center gap-1 text-[12px] text-[#a3aca5]">
             <strong className="text-[#65796c]">CrediUCC</strong>
-            <span>· Una iniciativa para impulsar tus metas</span>
+            <span>· Créditos estudiantiles para la comunidad UCC</span>
             <span className="ml-auto">2026</span>
           </footer>
         </div>

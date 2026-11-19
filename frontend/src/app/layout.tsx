@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "CrediUCC — Tu próximo paso",
-  description: "Solicita y consulta tu microcrédito estudiantil CrediUCC.",
+  title: "CrediUCC — Créditos estudiantiles",
+  description: "Solicita y consulta tu crédito estudiantil UCC: matrícula, materiales y sostenimiento.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
